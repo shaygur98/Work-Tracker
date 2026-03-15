@@ -137,9 +137,17 @@
     </div>
 
     <div class="row" style="align-items: center; justify-content: space-between; margin-top: 8px; margin-bottom: 8px; padding: 0 4px;">
-        <h2 style="margin: 0; font-size: 12px;">SHIFT LOG VIEW</h2>
-        <input type="month" id="viewMonth" class="input-field" style="width: auto; margin-bottom: 0; height: 40px; padding: 0 12px;" onchange="renderEntries()">
+    <h2 style="margin: 0; font-size: 12px;">SHIFT LOG VIEW</h2>
+    <div style="display: flex; gap: 8px; align-items: center;">
+        <button class="m3-btn btn-outline" style="height: 36px; width: 36px; padding: 0; border-radius: 12px;" onclick="shiftViewMonth(-1)">
+            <span class="material-icons-round" style="font-size: 20px;">chevron_left</span>
+        </button>
+        <input type="month" id="viewMonth" class="input-field" style="width: auto; margin-bottom: 0; height: 36px; padding: 0 12px;" onchange="renderEntries()">
+        <button class="m3-btn btn-outline" style="height: 36px; width: 36px; padding: 0; border-radius: 12px;" onclick="shiftViewMonth(1)">
+            <span class="material-icons-round" style="font-size: 20px;">chevron_right</span>
+        </button>
     </div>
+</div>
     <table id="dataTable"><tbody id="logBody"></tbody></table>
 </div>
 
@@ -212,6 +220,20 @@
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     document.getElementById('viewMonth').value = `${yyyy}-${mm}`;
+
+    function shiftViewMonth(dir) {
+        const vm = document.getElementById('viewMonth');
+        if (!vm.value) return;
+        
+        let [y, m] = vm.value.split('-').map(Number);
+        m += dir;
+        
+        if (m > 12) { m = 1; y++; }
+        if (m < 1) { m = 12; y--; }
+        
+        vm.value = `${y}-${String(m).padStart(2, '0')}`;
+        renderEntries();
+    }
     
     function renderEntries() {
         const r = parseFloat(document.getElementById('rate').value) || 0;

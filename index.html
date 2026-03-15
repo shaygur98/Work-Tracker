@@ -118,28 +118,23 @@
         <div style="font-size: 14px; opacity: 0.7;">Gross Salary in Range</div>
     </div>
 
-    <div class="row" style="align-items: center; justify-content: space-between; margin-bottom: 12px;">
-            <h2 style="margin: 0;">Report & Data</h2>
-            <div style="display: flex; gap: 8px;">
-                <button class="m3-btn btn-outline" style="height: 32px; padding: 0 12px; border-radius: 8px;" onclick="shiftMonth(-1)">
-                    <span class="material-icons-round" style="font-size: 18px;">chevron_left</span>
-                </button>
-                <button class="m3-btn btn-outline" style="height: 32px; padding: 0 12px; border-radius: 8px;" onclick="shiftMonth(1)">
-                    <span class="material-icons-round" style="font-size: 18px;">chevron_right</span>
-                </button>
-            </div>
-        </div>
+    <div class="m3-card">
+        <h2>Report & Data</h2>
         
-        <div class="row" style="margin-bottom: 16px;">
-            <div class="flex-1">
-                <label style="font-size:11px; font-weight:700; color:var(--p); display:block; margin-bottom:8px; padding-left:4px;">FROM</label>
-                <input type="date" id="reportStart" class="input-field" style="margin-bottom:0;" onchange="renderEntries()">
-            </div>
-            <div class="flex-1">
-                <label style="font-size:11px; font-weight:700; color:var(--p); display:block; margin-bottom:8px; padding-left:4px;">TO</label>
-                <input type="date" id="reportEnd" class="input-field" style="margin-bottom:0;" onchange="renderEntries()">
-            </div>
+        <div style="margin-bottom: 16px;">
+            <label style="font-size:11px; font-weight:700; color:var(--p); display:block; margin-bottom:8px; padding-left:4px;">SELECT MONTH</label>
+            <input type="month" id="reportMonth" class="input-field" style="margin-bottom:0;" onchange="renderEntries()">
         </div>
+
+        <input type="number" id="rate" value="50" class="input-field" oninput="renderEntries()">
+        
+        <button class="m3-btn btn-tonal" onclick="generatePDF()" style="width:100%; margin-bottom:16px;"><span class="material-icons-round">picture_as_pdf</span> Generate PDF</button>
+        <div class="row" style="margin-bottom:0; gap:8px">
+            <button class="m3-btn btn-outline flex-1" onclick="exportBackup()"><span class="material-icons-round">download</span> Export</button>
+            <button class="m3-btn btn-outline flex-1" onclick="document.getElementById('fileInput').click()"><span class="material-icons-round">upload</span> Import</button>
+            <input type="file" id="fileInput" accept=".json" onchange="importBackup(event)">
+        </div>
+    </div>
 
     <table id="dataTable"><tbody id="logBody"></tbody></table>
 </div>
@@ -210,59 +205,52 @@
         tx.oncomplete = () => { document.getElementById('end').value = ''; renderEntries(); };
     }
 
-    function shiftMonth(dir) {
-        const sR = document.getElementById('reportStart');
-        const eR = document.getElementById('reportEnd');
-        const d = new Date(sR.value);
-        d.setMonth(d.getMonth() + dir);
-        // Set to first and last day of the new month automatically
-        sR.valueAsDate = new Date(d.getFullYear(), d.getMonth(), 1);
-        eR.valueAsDate = new Date(d.getFullYear(), d.getMonth() + 1, 0); 
-        renderEntries();
-    }
+    const today = new Date();
+    document.getElementById('date').valueAsDate = today;
+    
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    document.getElementById('reportMonth').value = `${yyyy}-${mm}`;
 
     function renderEntries() {
         const r = parseFloat(document.getElementById('rate').value) || 0;
-        const sR = document.getElementById('reportStart').value;
-        const eR = document.getElementById('reportEnd').value;
+        const selMonth = document.getElementById('reportMonth').value; // Format: YYYY-MM
         const b = document.getElementById('logBody');
         b.innerHTML = ''; let tP = 0;
         
         db.transaction("shifts").objectStore("shifts").getAll().onsuccess = (e) => {
             e.target.result.sort((x,y) => new Date(y.date) - new Date(x.date)).forEach(en => {
-                // Table now filters based on your selected dates
-                if (en.date >= sR && en.date <= eR) {
+                // Filter: Check if the shift's date starts with the selected YYYY-MM
+                if (en.date.startsWith(selMonth)) {
                     const p = calculatePay(en.duration, r);
                     tP += p;
-                    b.innerHTML += `<tr>
-                        <td>${formatDate(en.date)}</td>
-                        <td style="color:var(--out)">${en.start}-${en.end}</td>
-                        <td style="font-weight:700">${formatTime(en.duration)}</td>
-                        <td>₪${p.toFixed(0)}</td>
-                        <td><span class="material-icons-round delete-btn" onclick="deleteEntry(${en.id})">delete</span></td>
-                    </tr>`;
+                    b.innerHTML += `<tr><td>${formatDate(en.date)}</td><td style="color:var(--out)">${en.start}-${en.end}</td><td style="font-weight:700">${formatTime(en.duration)}</td><td>₪${p.toFixed(0)}</td><td><span class="material-icons-round delete-btn" onclick="deleteEntry(${en.id})">delete</span></td></tr>`;
                 }
             });
             document.getElementById('totalSalary').innerText = `₪${tP.toLocaleString()}`;
         };
     }
 
-    function deleteEntry(id) { if(confirm("Delete?")) { const tx = db.transaction(["shifts"], "readwrite"); tx.objectStore("shifts").delete(id); tx.oncomplete = renderEntries; } }
-
     function generatePDF() {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        const start = document.getElementById('reportStart').value;
-        const end = document.getElementById('reportEnd').value;
+        const selMonth = document.getElementById('reportMonth').value;
+        
         db.transaction("shifts").objectStore("shifts").getAll().onsuccess = (e) => {
-            const f = e.target.result.filter(en => en.date >= start && en.date <= end).sort((x,y) => new Date(x.date) - new Date(y.date));
+            // Filter PDF data by the selected month
+            const f = e.target.result.filter(en => en.date.startsWith(selMonth)).sort((x,y) => new Date(x.date) - new Date(y.date));
+            
             doc.setFontSize(22); doc.setTextColor(103, 80, 164); doc.text(`Work Hours Report`, 14, 22);
-            doc.setFontSize(11); doc.setTextColor(100); doc.text(`Period: ${formatDate(start)} to ${formatDate(end)}`, 14, 30);
+            doc.setFontSize(11); doc.setTextColor(100); doc.text(`Month: ${selMonth}`, 14, 30);
+            
             const tD = f.map(en => [formatDate(en.date), `${en.start} - ${en.end}`, formatTime(en.duration)]);
             doc.autoTable({ head: [['Date', 'Time Slot', 'Total Duration']], body: tD, startY: 38, headStyles: { fillColor: [103, 80, 164] } });
+            
             doc.text(`Total Monthly Hours: ${formatTime(f.reduce((s, en) => s + en.duration, 0))}`, 14, doc.lastAutoTable.finalY + 15);
-            doc.save(`Work_Report_${start}_${end}.pdf`);
+            doc.save(`Work_Report_${selMonth}.pdf`);
         };
     }
+
+    function deleteEntry(id) { if(confirm("Delete?")) { const tx = db.transaction(["shifts"], "readwrite"); tx.objectStore("shifts").delete(id); tx.oncomplete = renderEntries; } }
 
     function exportBackup() { db.transaction("shifts").objectStore("shifts").getAll().onsuccess = (e) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(e.target.result)], {type: "application/json"})); a.download = `work_backup.json`; a.click(); }; }
     function importBackup(ev) { const reader = new FileReader(); reader.onload = e => { const tx = db.transaction(["shifts"], "readwrite"); JSON.parse(e.target.result).forEach(i => { delete i.id; tx.objectStore("shifts").add(i); }); tx.oncomplete = () => { alert("Imported!"); renderEntries(); }; }; reader.readAsText(ev.target.files[0]); }

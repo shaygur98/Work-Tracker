@@ -188,6 +188,16 @@
         const m = document.getElementById('settingsMenu'); 
         m.style.display = (m.style.display === 'none' || m.style.display === '') ? 'flex' : 'none'; 
     }
+    // Close settings when clicking outside
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('settingsMenu');
+        const fabContainer = document.querySelector('.settings-fab-container');
+        
+        if (menu.style.display === 'flex' && !fabContainer.contains(event.target)) {
+            menu.style.display = 'none';
+        }
+    });
+    
     function setAccent(c) { localStorage.setItem('accentColor', c); document.documentElement.style.setProperty('--seed', c); toggleSettings(); }
     
     // Initial Load

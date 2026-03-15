@@ -16,6 +16,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
         :root {
             --seed: #6750A4;
@@ -29,15 +30,25 @@
             --on-surf: #1c1b1f; --out: color-mix(in srgb, var(--seed), black 30%);
             --card-bg: #ffffff;
         }
-        [data-theme="dark"] {
+
+        /* Dark Mode variables applied via class for JS control */
+        .dark-mode {
             --on-p: #381e72;
             --p-cont: color-mix(in srgb, var(--seed), black 40%);
             --on-p-cont: color-mix(in srgb, var(--seed), white 80%);
             --s-cont: color-mix(in srgb, var(--seed), black 60%);
             --on-s-cont: color-mix(in srgb, var(--seed), white 70%);
-            --surf: #1c1b1f; --surf-v: #49454f; --on-surf: #e6e1e5; --out: #938f99; --card-bg: #2b2930;
+            --surf: #1c1b1f; 
+            --surf-v: #49454f; --on-surf: #e6e1e5; --out: #938f99; --card-bg: #2b2930;
         }
-        body { font-family: 'Google Sans', 'Roboto', sans-serif; background-color: var(--surf); color: var(--on-surf); margin: 0; padding: 16px; display: flex; flex-direction: column; align-items: center; transition: all 0.4s ease; }
+
+        body {
+            font-family: 'Google Sans', 'Roboto', sans-serif;
+            background-color: var(--surf); color: var(--on-surf);
+            margin: 0; padding: 16px; display: flex; flex-direction: column; align-items: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         .container { width: 100%; max-width: 550px; position: relative; padding-top: 40px;}
         .settings-fab-container { position: absolute; top: 0; right: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 100; }
         .settings-menu { background: var(--card-bg); border-radius: 24px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); border: 1px solid var(--surf-v); display: none; flex-direction: column; gap: 12px; width: 220px; }
@@ -136,15 +147,38 @@
     document.getElementById('reportStart').valueAsDate = new Date(today.getFullYear(), today.getMonth(), 1);
     document.getElementById('reportEnd').valueAsDate = today;
 
+    // --- Dynamic Theme Logic ---
+    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    function applyTheme() {
+        const setting = localStorage.getItem('theme') || 'system';
+        const shouldBeDark = setting === 'dark' || (setting === 'system' && darkModeMediaQuery.matches);
+        
+        if (shouldBeDark) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+    }
+
+    // Listen for system theme changes in real-time
+    darkModeMediaQuery.addEventListener('change', applyTheme);
+
+    function changeTheme(v) { 
+        localStorage.setItem('theme', v); 
+        applyTheme(); 
+    }
+
     function toggleSettings() { const m = document.getElementById('settingsMenu'); m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; }
-    function changeTheme(v) { localStorage.setItem('theme', v); document.documentElement.setAttribute('data-theme', v === 'system' ? '' : v); }
     function setAccent(c) { localStorage.setItem('accentColor', c); document.documentElement.style.setProperty('--seed', c); toggleSettings(); }
     
+    // Initial Load
     const savedTheme = localStorage.getItem('theme') || 'system';
     document.getElementById('themeSelector').value = savedTheme;
-    changeTheme(savedTheme);
+    applyTheme();
     if(localStorage.getItem('accentColor')) setAccent(localStorage.getItem('accentColor'));
 
+    // --- Standard App Logic ---
     function formatTime(d) { const h = Math.floor(d); const m = Math.round((d - h) * 60); return `${h}:${m.toString().padStart(2, '0')}`; }
     function formatDate(s) { const [y, m, d] = s.split('-'); return `${d}/${m}/${y}`; }
     function setNow() { document.getElementById('end').value = new Date().toTimeString().slice(0,5); }

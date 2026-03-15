@@ -56,7 +56,21 @@
         h1 { font-size: 28px; font-weight: 400; margin-bottom: 24px; text-align: center; color: var(--p); }
         h2 { font-size: 11px; font-weight: 700; margin-bottom: 12px; letter-spacing: 0.8px; color: var(--p); text-transform: uppercase;}
         .input-field, select { background: var(--surf); border: 1px solid var(--surf-v); border-radius: 12px; padding: 16px; font-size: 16px; color: var(--on-surf); width: 100%; box-sizing: border-box; margin-bottom: 16px; }
-        .row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+        .row { 
+                display: flex; 
+                gap: 12px; 
+                align-items: center; /* Changed from flex-start to center */
+                margin-bottom: 16px; 
+            }
+            .row .input-field { 
+                margin-bottom: 0; 
+            }          
+            .btn-now { 
+                height: 48px; 
+                padding: 0 16px; 
+                border-radius: 16px;
+                margin-top: 0; /* Removed the 14px margin-top */
+            }
         .flex-1 { flex: 1; }
         .m3-btn { height: 56px; border-radius: 28px; border: none; font-weight: 500; padding: 0 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; transition: 0.2s; }
         .btn-filled { background-color: var(--p); color: var(--on-p); width: 100%; }

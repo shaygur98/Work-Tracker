@@ -81,7 +81,7 @@
         <button class="m3-btn btn-tonal" style="width:48px; height:48px; padding:0; border-radius: 16px;" onclick="toggleSettings()">
             <span class="material-icons-round">palette</span>
         </button>
-        <div id="settingsMenu" class="settings-menu">
+        <div id="settingsMenu" class="settings-menu" style="display: none;">
             <h2>Appearance</h2>
             <select id="themeSelector" onchange="changeTheme(this.value)">
                 <option value="system">System Default</option>
@@ -184,7 +184,10 @@
         applyTheme(); 
     }
 
-    function toggleSettings() { const m = document.getElementById('settingsMenu'); m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; }
+    function toggleSettings() { 
+        const m = document.getElementById('settingsMenu'); 
+        m.style.display = (m.style.display === 'none' || m.style.display === '') ? 'flex' : 'none'; 
+    }
     function setAccent(c) { localStorage.setItem('accentColor', c); document.documentElement.style.setProperty('--seed', c); toggleSettings(); }
     
     // Initial Load

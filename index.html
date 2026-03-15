@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="manifest" href='data:application/manifest+json,{"name":"Work Tracker","short_name":"Tracker","start_url":"index.html","display":"standalone","background_color":"#ffffff","theme_color":"#6750A4","icons":[{"src":"work_tracker_icon.png","sizes":"512x512","type":"image/png"}]}'>
-    <meta name="theme-color" content="#6750A4">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Work Tracker Material You</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Work Tracker</title>
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Work Tracker","short_name":"Tracker","start_url":"index.html","display":"standalone","background_color":"#ffffff","theme_color":"#6750A4","icons":[{"src":"icon.png","sizes":"512x512","type":"image/png"}]}'>
+    <link rel="icon" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="theme-color" content="#6750A4">
+    
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -23,80 +26,38 @@
             --on-surf: #1c1b1f; --out: color-mix(in srgb, var(--seed), black 30%);
             --card-bg: #ffffff;
         }
-
         [data-theme="dark"] {
             --on-p: #381e72;
             --p-cont: color-mix(in srgb, var(--seed), black 40%);
             --on-p-cont: color-mix(in srgb, var(--seed), white 80%);
             --s-cont: color-mix(in srgb, var(--seed), black 60%);
             --on-s-cont: color-mix(in srgb, var(--seed), white 70%);
-            --surf: #1c1b1f; 
-            --surf-v: #49454f; --on-surf: #e6e1e5; --out: #938f99; --card-bg: #2b2930;
+            --surf: #1c1b1f; --surf-v: #49454f; --on-surf: #e6e1e5; --out: #938f99; --card-bg: #2b2930;
         }
-
-        body {
-            font-family: 'Google Sans', 'Roboto', sans-serif;
-            background-color: var(--surf); color: var(--on-surf);
-            margin: 0; padding: 16px; display: flex; flex-direction: column; align-items: center;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
+        body { font-family: 'Google Sans', 'Roboto', sans-serif; background-color: var(--surf); color: var(--on-surf); margin: 0; padding: 16px; display: flex; flex-direction: column; align-items: center; transition: all 0.4s ease; }
         .container { width: 100%; max-width: 550px; position: relative; padding-top: 40px;}
-        
-        .settings-fab-container {
-            position: absolute; top: 0; right: 0;
-            display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 100;
-        }
-
-        .settings-menu {
-            background: var(--card-bg); border-radius: 24px; padding: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.15); border: 1px solid var(--surf-v);
-            display: none; flex-direction: column; gap: 12px; width: 220px;
-        }
-
-        .m3-card {
-            background-color: var(--card-bg); border-radius: 28px; padding: 24px;
-            margin-bottom: 16px; border: 1px solid var(--surf-v);
-        }
-
+        .settings-fab-container { position: absolute; top: 0; right: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 100; }
+        .settings-menu { background: var(--card-bg); border-radius: 24px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); border: 1px solid var(--surf-v); display: none; flex-direction: column; gap: 12px; width: 220px; }
+        .m3-card { background-color: var(--card-bg); border-radius: 28px; padding: 24px; margin-bottom: 16px; border: 1px solid var(--surf-v); }
         h1 { font-size: 28px; font-weight: 400; margin-bottom: 24px; text-align: center; color: var(--p); }
         h2 { font-size: 11px; font-weight: 700; margin-bottom: 12px; letter-spacing: 0.8px; color: var(--p); text-transform: uppercase;}
-
-        .input-field, select {
-            background: var(--surf); border: 1px solid var(--surf-v);
-            border-radius: 12px; padding: 16px; font-size: 16px; color: var(--on-surf);
-            width: 100%; box-sizing: border-box; margin-bottom: 16px;
-        }
-
+        .input-field, select { background: var(--surf); border: 1px solid var(--surf-v); border-radius: 12px; padding: 16px; font-size: 16px; color: var(--on-surf); width: 100%; box-sizing: border-box; margin-bottom: 16px; }
         .row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
         .flex-1 { flex: 1; }
-
-        .m3-btn {
-            height: 56px; border-radius: 28px; border: none; font-weight: 500;
-            padding: 0 24px; cursor: pointer; display: flex; align-items: center;
-            justify-content: center; gap: 12px; transition: 0.2s;
-        }
+        .m3-btn { height: 56px; border-radius: 28px; border: none; font-weight: 500; padding: 0 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; transition: 0.2s; }
         .btn-filled { background-color: var(--p); color: var(--on-p); width: 100%; }
         .btn-tonal { background-color: var(--s-cont); color: var(--on-s-cont); }
         .btn-now { height: 48px; padding: 0 16px; margin-top: 14px; border-radius: 16px; }
         .btn-outline { background: transparent; border: 1px solid var(--p); height: 48px; font-size: 13px; color: var(--p); border-radius: 16px;}
-
-        .salary-display {
-            background-color: var(--p-cont); border-radius: 28px; padding: 32px;
-            text-align: center; margin-bottom: 16px; border: 1px solid var(--p);
-        }
+        .salary-display { background-color: var(--p-cont); border-radius: 28px; padding: 32px; text-align: center; margin-bottom: 16px; border: 1px solid var(--p); }
         .salary-amt { font-size: 45px; font-weight: 700; color: var(--on-p-cont); }
-
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
         td { background: var(--card-bg); padding: 16px 12px; font-size: 14px; border-top: 1px solid var(--surf-v); border-bottom: 1px solid var(--surf-v); }
         td:first-child { border-left: 1px solid var(--surf-v); border-radius: 16px 0 0 16px; }
         td:last-child { border-right: 1px solid var(--surf-v); border-radius: 0 16px 16px 0; text-align: right; }
-
         .delete-btn { color: #BA1A1A; cursor: pointer; }
         .color-dot { width: 34px; height: 34px; border-radius: 50%; border: 3px solid #fff; cursor: pointer; display: inline-block; margin: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        
-        /* HIDDEN FILE INPUT */
-        #fileInput { display: none !important; visibility: hidden !important; width: 0; height: 0; position: absolute; }
+        #fileInput { display: none !important; }
     </style>
 </head>
 <body>
@@ -108,7 +69,7 @@
         </button>
         <div id="settingsMenu" class="settings-menu">
             <h2>Appearance</h2>
-            <select id="themeSelector" onchange="changeTheme(this.value)" style="padding:10px; margin-bottom:8px">
+            <select id="themeSelector" onchange="changeTheme(this.value)">
                 <option value="system">System Default</option>
                 <option value="light">Light</option>
                 <option value="dark">Dark</option>
@@ -130,57 +91,35 @@
     <div class="m3-card">
         <h2>New Log</h2>
         <input type="date" id="date" class="input-field">
-        <div class="row" style="align-items: flex-start;">
-            <div class="flex-1">
-                <input type="time" id="start" class="input-field" value="08:00">
-            </div>
-            <div class="flex-1">
-                <input type="time" id="end" class="input-field">
-            </div>
+        <div class="row">
+            <div class="flex-1"><input type="time" id="start" class="input-field" value="08:00"></div>
+            <div class="flex-1"><input type="time" id="end" class="input-field"></div>
             <button class="m3-btn btn-tonal btn-now" onclick="setNow()">NOW</button>
         </div>
-        <button class="m3-btn btn-filled" onclick="addEntry()">
-            <span class="material-icons-round">add</span> Save Shift
-        </button>
+        <button class="m3-btn btn-filled" onclick="addEntry()"><span class="material-icons-round">add</span> Save Shift</button>
     </div>
 
     <div class="salary-display">
         <div class="salary-amt" id="totalSalary">₪0.00</div>
-        <div style="font-size: 14px; color: var(--on-p-cont); opacity: 0.7;">Gross Salary in Range</div>
+        <div style="font-size: 14px; opacity: 0.7;">Gross Salary in Range</div>
     </div>
 
     <div class="m3-card">
         <h2>Report & Data</h2>
         <div class="row">
-            <div class="flex-1">
-                <label style="font-size:11px">FROM</label>
-                <input type="date" id="reportStart" class="input-field">
-            </div>
-            <div class="flex-1">
-                <label style="font-size:11px">TO</label>
-                <input type="date" id="reportEnd" class="input-field">
-            </div>
+            <div class="flex-1"><label>FROM</label><input type="date" id="reportStart" class="input-field"></div>
+            <div class="flex-1"><label>TO</label><input type="date" id="reportEnd" class="input-field"></div>
         </div>
         <input type="number" id="rate" value="50" class="input-field" oninput="renderEntries()">
-        
-        <button class="m3-btn btn-tonal" onclick="generatePDF()" style="width:100%; margin-bottom:16px; border-radius: 16px; height: 56px;">
-            <span class="material-icons-round">picture_as_pdf</span> Generate PDF
-        </button>
-
+        <button class="m3-btn btn-tonal" onclick="generatePDF()" style="width:100%; margin-bottom:16px;"><span class="material-icons-round">picture_as_pdf</span> Generate PDF</button>
         <div class="row" style="margin-bottom:0; gap:8px">
-            <button class="m3-btn btn-outline flex-1" onclick="exportBackup()">
-                <span class="material-icons-round" style="font-size:18px">download</span> Export
-            </button>
-            <button class="m3-btn btn-outline flex-1" onclick="document.getElementById('fileInput').click()">
-                <span class="material-icons-round" style="font-size:18px">upload</span> Import
-            </button>
+            <button class="m3-btn btn-outline flex-1" onclick="exportBackup()"><span class="material-icons-round">download</span> Export</button>
+            <button class="m3-btn btn-outline flex-1" onclick="document.getElementById('fileInput').click()"><span class="material-icons-round">upload</span> Import</button>
             <input type="file" id="fileInput" accept=".json" onchange="importBackup(event)">
         </div>
     </div>
 
-    <table id="dataTable">
-        <tbody id="logBody"></tbody>
-    </table>
+    <table id="dataTable"><tbody id="logBody"></tbody></table>
 </div>
 
 <script>
@@ -194,121 +133,73 @@
     document.getElementById('reportStart').valueAsDate = new Date(today.getFullYear(), today.getMonth(), 1);
     document.getElementById('reportEnd').valueAsDate = today;
 
-    function toggleSettings() {
-        const menu = document.getElementById('settingsMenu');
-        menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
-    }
-
-    function changeTheme(val) {
-        localStorage.setItem('theme', val);
-        document.documentElement.setAttribute('data-theme', val === 'system' ? '' : val);
-    }
-
-    function setAccent(color) {
-        localStorage.setItem('accentColor', color);
-        document.documentElement.style.setProperty('--seed', color);
-        toggleSettings();
-    }
-
+    function toggleSettings() { const m = document.getElementById('settingsMenu'); m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; }
+    function changeTheme(v) { localStorage.setItem('theme', v); document.documentElement.setAttribute('data-theme', v === 'system' ? '' : v); }
+    function setAccent(c) { localStorage.setItem('accentColor', c); document.documentElement.style.setProperty('--seed', c); toggleSettings(); }
+    
     const savedTheme = localStorage.getItem('theme') || 'system';
     document.getElementById('themeSelector').value = savedTheme;
     changeTheme(savedTheme);
     if(localStorage.getItem('accentColor')) setAccent(localStorage.getItem('accentColor'));
 
-    function formatTime(decimal) {
-        const hrs = Math.floor(decimal);
-        const mins = Math.round((decimal - hrs) * 60);
-        return `${hrs}:${mins.toString().padStart(2, '0')}`;
-    }
-
-    function formatDate(dateStr) {
-        const [y, m, d] = dateStr.split('-');
-        return `${d}/${m}/${y}`;
-    }
-
+    function formatTime(d) { const h = Math.floor(d); const m = Math.round((d - h) * 60); return `${h}:${m.toString().padStart(2, '0')}`; }
+    function formatDate(s) { const [y, m, d] = s.split('-'); return `${d}/${m}/${y}`; }
     function setNow() { document.getElementById('end').value = new Date().toTimeString().slice(0,5); }
 
-    function calculatePay(hours, rate) {
-        if (hours <= 8) return hours * rate;
-        if (hours <= 10) return (8 * rate) + ((hours - 8) * rate * 1.25);
-        return (8 * rate) + (2 * rate * 1.25) + ((hours - 10) * rate * 1.5);
+    function calculatePay(h, r) {
+        if (h <= 8) return h * r;
+        if (h <= 10) return (8 * r) + ((h - 8) * r * 1.25);
+        return (8 * r) + (2 * r * 1.25) + ((h - 10) * r * 1.5);
     }
 
     function addEntry() {
-        const date = document.getElementById('date').value;
-        const start = document.getElementById('start').value;
-        const end = document.getElementById('end').value;
-        if (!date || !start || !end) return;
-        const s = start.split(':'); const e = end.split(':');
-        let duration = (new Date(0,0,0,e[0],e[1]) - new Date(0,0,0,s[0],s[1])) / 3600000;
-        if (duration < 0) duration += 24;
-        const transaction = db.transaction(["shifts"], "readwrite");
-        transaction.objectStore("shifts").add({ date, start, end, duration });
-        transaction.oncomplete = () => { document.getElementById('end').value = ''; renderEntries(); };
+        const d = document.getElementById('date').value;
+        const s = document.getElementById('start').value;
+        const e = document.getElementById('end').value;
+        if (!d || !s || !e) return;
+        const st = s.split(':'); const et = e.split(':');
+        let dur = (new Date(0,0,0,et[0],et[1]) - new Date(0,0,0,st[0],st[1])) / 3600000;
+        if (dur < 0) dur += 24;
+        const tx = db.transaction(["shifts"], "readwrite");
+        tx.objectStore("shifts").add({ date: d, start: s, end: e, duration: dur });
+        tx.oncomplete = () => { document.getElementById('end').value = ''; renderEntries(); };
     }
 
     function renderEntries() {
-        const rate = parseFloat(document.getElementById('rate').value) || 0;
-        const startR = document.getElementById('reportStart').value;
-        const endR = document.getElementById('reportEnd').value;
-        const body = document.getElementById('logBody');
-        body.innerHTML = '';
-        let totalPay = 0;
+        const r = parseFloat(document.getElementById('rate').value) || 0;
+        const sR = document.getElementById('reportStart').value;
+        const eR = document.getElementById('reportEnd').value;
+        const b = document.getElementById('logBody');
+        b.innerHTML = ''; let tP = 0;
         db.transaction("shifts").objectStore("shifts").getAll().onsuccess = (e) => {
-            e.target.result.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(en => {
-                const pay = calculatePay(en.duration, rate);
-                if (en.date >= startR && en.date <= endR) totalPay += pay;
-                body.innerHTML += `<tr>
-                    <td>${formatDate(en.date)}</td>
-                    <td style="color:var(--out)">${en.start}-${en.end}</td>
-                    <td style="font-weight:700">${formatTime(en.duration)}</td>
-                    <td>₪${pay.toFixed(0)}</td>
-                    <td><span class="material-icons-round delete-btn" onclick="deleteEntry(${en.id})">delete</span></td>
-                </tr>`;
+            e.target.result.sort((x,y) => new Date(y.date) - new Date(x.date)).forEach(en => {
+                const p = calculatePay(en.duration, r);
+                if (en.date >= sR && en.date <= eR) tP += p;
+                b.innerHTML += `<tr><td>${formatDate(en.date)}</td><td style="color:var(--out)">${en.start}-${en.end}</td><td style="font-weight:700">${formatTime(en.duration)}</td><td>₪${p.toFixed(0)}</td><td><span class="material-icons-round delete-btn" onclick="deleteEntry(${en.id})">delete</span></td></tr>`;
             });
-            document.getElementById('totalSalary').innerText = `₪${totalPay.toLocaleString()}`;
+            document.getElementById('totalSalary').innerText = `₪${tP.toLocaleString()}`;
         };
     }
 
-    function deleteEntry(id) {
-        if(!confirm("Delete?")) return;
-        const transaction = db.transaction(["shifts"], "readwrite");
-        transaction.objectStore("shifts").delete(id);
-        transaction.oncomplete = renderEntries;
-    }
+    function deleteEntry(id) { if(confirm("Delete?")) { const tx = db.transaction(["shifts"], "readwrite"); tx.objectStore("shifts").delete(id); tx.oncomplete = renderEntries; } }
 
     function generatePDF() {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
         const start = document.getElementById('reportStart').value;
         const end = document.getElementById('reportEnd').value;
         db.transaction("shifts").objectStore("shifts").getAll().onsuccess = (e) => {
-            const filtered = e.target.result.filter(en => en.date >= start && en.date <= end).sort((a,b) => new Date(a.date) - new Date(b.date));
+            const f = e.target.result.filter(en => en.date >= start && en.date <= end).sort((x,y) => new Date(x.date) - new Date(y.date));
             doc.setFontSize(22); doc.setTextColor(103, 80, 164); doc.text(`Work Hours Report`, 14, 22);
             doc.setFontSize(11); doc.setTextColor(100); doc.text(`Period: ${formatDate(start)} to ${formatDate(end)}`, 14, 30);
-            const tableData = filtered.map(en => [formatDate(en.date), `${en.start} - ${en.end}`, formatTime(en.duration)]);
-            doc.autoTable({ head: [['Date', 'Time Slot', 'Total Duration']], body: tableData, startY: 38, headStyles: { fillColor: [103, 80, 164] } });
-            doc.text(`Total Monthly Hours: ${formatTime(filtered.reduce((s, en) => s + en.duration, 0))}`, 14, doc.lastAutoTable.finalY + 15);
+            const tD = f.map(en => [formatDate(en.date), `${en.start} - ${en.end}`, formatTime(en.duration)]);
+            doc.autoTable({ head: [['Date', 'Time Slot', 'Total Duration']], body: tD, startY: 38, headStyles: { fillColor: [103, 80, 164] } });
+            doc.text(`Total Monthly Hours: ${formatTime(f.reduce((s, en) => s + en.duration, 0))}`, 14, doc.lastAutoTable.finalY + 15);
             doc.save(`Work_Report_${start}_${end}.pdf`);
         };
     }
 
-    function exportBackup() {
-        db.transaction("shifts").objectStore("shifts").getAll().onsuccess = (e) => {
-            const a = document.createElement("a");
-            a.href = URL.createObjectURL(new Blob([JSON.stringify(e.target.result)], {type: "application/json"}));
-            a.download = `work_backup.json`; a.click();
-        };
-    }
-
-    function importBackup(ev) {
-        const reader = new FileReader();
-        reader.onload = e => {
-            const transaction = db.transaction(["shifts"], "readwrite");
-            JSON.parse(e.target.result).forEach(item => { delete item.id; transaction.objectStore("shifts").add(item); });
-            transaction.oncomplete = () => { alert("Imported!"); renderEntries(); };
-        };
-        reader.readAsText(ev.target.files[0]);
-    }
+    function exportBackup() { db.transaction("shifts").objectStore("shifts").getAll().onsuccess = (e) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(e.target.result)], {type: "application/json"})); a.download = `work_backup.json`; a.click(); }; }
+    function importBackup(ev) { const reader = new FileReader(); reader.onload = e => { const tx = db.transaction(["shifts"], "readwrite"); JSON.parse(e.target.result).forEach(i => { delete i.id; tx.objectStore("shifts").add(i); }); tx.oncomplete = () => { alert("Imported!"); renderEntries(); }; }; reader.readAsText(ev.target.files[0]); }
 </script>
 </body>
 </html>

@@ -132,9 +132,15 @@
             <label style="font-size:11px; font-weight:700; color:var(--p); letter-spacing:0.8px; display:block; margin-bottom:8px; padding-left:4px;">HOURLY RATE (₪)</label>
             <input type="number" id="rate" value="60" class="input-field" style="margin-bottom: 0;" oninput="renderEntries()">
         </div
+        <div style="margin-bottom: 24px;">
+            <label style="font-size:11px; font-weight:700; color:var(--p); letter-spacing:0.8px; display:block; margin-bottom:8px; padding-left:4px;">HOURLY RATE (₪)</label>
+            <input type="number" id="rate" value="60" class="input-field" style="margin-bottom: 0;" oninput="renderEntries()">
+        </div>
+        
         <div style="height: 1px; background-color: var(--surf-v); margin: 0 0 16px 0;"></div>
         <h2 style="margin-top: 0;">Export & Backup</h2>
-            <div class="row" style="margin-bottom: 16px; gap: 8px;">
+
+        <div class="row" style="margin-bottom: 16px; gap: 8px;">
             <button class="m3-btn btn-tonal flex-1" onclick="generatePDF()">
                 <span class="material-icons-round">picture_as_pdf</span> PDF
             </button>

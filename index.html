@@ -169,11 +169,13 @@
                 <div style="font-size: 11px; font-weight: 700; color: var(--on-p-cont); margin-bottom: 4px; letter-spacing: 0.5px;">MONTHLY PAY</div>
                 <div id="statPay" style="font-size: 24px; font-weight: 700; color: var(--on-p-cont);">₪0</div>
             </div>
+            <div id="graphContainer" style="height: 120px; width: 100%; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--surf-v);">
+            </div>
         </div>
     </div>
     
     <div style="text-align: center; margin-top: 32px; margin-bottom: 24px; color: var(--on-surf); opacity: 0.7;">
-        <div style="font-size: 11px; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px;">VERSION 1.4.0</div>
+        <div style="font-size: 11px; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px;">VERSION 1.4.1</div>
         <a href="https://github.com/shaygur98/work-tracker" target="_blank" style="color: var(--p); text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; font-weight: 500;">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57C20.565 21.795 24 17.31 24 12c0-6.63-5.37-12-12-12z"/></svg>
             Source Code
@@ -298,17 +300,25 @@
         const b = document.getElementById('logBody');
         
         b.innerHTML = ''; 
-        let tP = 0; // Total pay for report range
-        let mShifts = 0, mHours = 0, mPay = 0; // Monthly view stats
+        let tP = 0; 
+        let mShifts = 0, mHours = 0, mPay = 0; 
+        
+        // Setup for the yearly line graph
+        const [viewY, viewM] = viewMonth.split('-');
+        const today = new Date();
+        // Limit the graph to the current month if we are looking at the current year
+        const maxGraphMonth = (parseInt(viewY) === today.getFullYear()) ? today.getMonth() + 1 : 12;
+        let yearHours = {};
+        for (let i = 1; i <= maxGraphMonth; i++) yearHours[i] = 0;
         
         db.transaction("shifts").objectStore("shifts").getAll().onsuccess = (e) => {
             e.target.result.sort((x,y) => new Date(y.date) - new Date(x.date)).forEach(en => {
                 const p = calculatePay(en.duration, r);
                 
-                // 1. Report logic (range)
+                // 1. Report logic
                 if (en.date >= sR && en.date <= eR) tP += p;
                 
-                // 2. View logic (filters table and calculates stats)
+                // 2. View logic (Filters table and calculates stats)
                 if (en.date.startsWith(viewMonth)) {
                     mShifts++;
                     mHours += en.duration;
@@ -322,15 +332,62 @@
                         <td><span class="material-icons-round delete-btn" onclick="deleteEntry(${en.id})">delete</span></td>
                     </tr>`;
                 }
+                
+                // 3. Graph logic (Accumulates hours for the selected year)
+                if (en.date.startsWith(viewY)) {
+                    const shiftMonth = parseInt(en.date.split('-')[1], 10);
+                    if (shiftMonth <= maxGraphMonth) {
+                        yearHours[shiftMonth] += en.duration;
+                    }
+                }
             });
             
-            // Update DOM elements
+            // Update Text Elements
             document.getElementById('totalSalary').innerText = `₪${tP.toLocaleString()}`;
-            
             document.getElementById('statShifts').innerText = mShifts;
             document.getElementById('statHours').innerText = formatTime(mHours);
             document.getElementById('statAvg').innerText = mShifts > 0 ? formatTime(mHours / mShifts) : "0:00";
             document.getElementById('statPay').innerText = `₪${mPay.toFixed(0)}`;
+
+            // --- Draw the Line Graph (SVG) ---
+            const g = document.getElementById('graphContainer');
+            if (maxGraphMonth === 0) {
+                g.innerHTML = '';
+                return;
+            }
+
+            const maxH = Math.max(...Object.values(yearHours), 1); // Avoid division by zero
+            let svgPoints = [];
+            let circles = '';
+            let labels = '';
+            
+            // Calculate horizontal spacing
+            const stepX = 100 / Math.max(maxGraphMonth - 1, 1); 
+
+            for (let i = 1; i <= maxGraphMonth; i++) {
+                const h = yearHours[i];
+                // Map values to coordinates (0 is top, 40 is bottom)
+                const cx = maxGraphMonth === 1 ? 50 : (i - 1) * stepX;
+                const cy = 35 - (h / maxH) * 30; 
+                
+                svgPoints.push(`${cx},${cy}`);
+                
+                circles += `<circle cx="${cx}" cy="${cy}" r="2" fill="var(--card-bg)" stroke="var(--p)" stroke-width="1.5" />`;
+                
+                const monthNames = ["J","F","M","A","M","J","J","A","S","O","N","D"];
+                labels += `<text x="${cx}" y="46" font-size="4.5" fill="var(--out)" text-anchor="middle" font-weight="500">${monthNames[i-1]}</text>`;
+            }
+
+            const pathData = svgPoints.join(' ');
+
+            g.innerHTML = `
+                <div style="font-size: 11px; font-weight: 700; color: var(--out); margin-bottom: 8px; letter-spacing: 0.5px; text-align: left;">HOURS PER MONTH (${viewY})</div>
+                <svg viewBox="-5 0 110 50" style="width: 100%; height: 100%; overflow: visible; display: block;">
+                    <polyline points="${pathData}" fill="none" stroke="var(--p)" stroke-width="2" stroke-linejoin="round" />
+                    ${circles}
+                    ${labels}
+                </svg>
+            `;
         };
     }
 

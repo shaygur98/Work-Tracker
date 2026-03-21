@@ -116,12 +116,15 @@
         <button class="m3-btn btn-filled" onclick="addEntry()"><span class="material-icons-round">add</span> Save Shift</button>
     </div>
 
-    <div class="salary-display">
-        <button class="hide-salary-btn" onclick="toggleSalaryVisibility()">
-            <span class="material-icons-round" id="hideSalaryIcon" style="font-size: 20px;">visibility</span>
+    <div style="width: 100%; display: flex; flex-direction: column; align-items: flex-end; margin-bottom: 16px;">
+        <button class="hide-salary-btn" style="position: static; margin-bottom: 8px;" onclick="toggleSalaryVisibility()">
+            <span class="material-icons-round" id="hideSalaryIcon" style="font-size: 20px;">visibility_off</span>
         </button>
-        <div class="salary-amt" id="totalSalary">₪0.00</div>
-        <div style="font-size: 14px; opacity: 0.7;">Gross Salary in Range</div>
+        
+        <div class="salary-display" id="salaryBox" style="width: 100%; margin-bottom: 0;">
+            <div class="salary-amt" id="totalSalary">₪0</div>
+            <div style="font-size: 14px; opacity: 0.7;">Gross Salary in Range</div>
+        </div>
     </div>
 
     <div class="m3-card">
@@ -197,7 +200,7 @@
     </div>
     
     <div style="text-align: center; margin-top: 32px; margin-bottom: 24px; color: var(--on-surf); opacity: 0.7;">
-        <div style="font-size: 11px; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px;">VERSION 1.5.4</div>
+        <div style="font-size: 11px; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px;">VERSION 1.5.5</div>
         <a href="https://github.com/shaygur98/work-tracker" target="_blank" style="color: var(--p); text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; font-weight: 500;">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57C20.565 21.795 24 17.31 24 12c0-6.63-5.37-12-12-12z"/></svg>
             Source Code
@@ -213,8 +216,26 @@
     function toggleSalaryVisibility() {
         isSalaryHidden = !isSalaryHidden;
         localStorage.setItem('hideSalary', isSalaryHidden);
-        renderEntries(); 
+        
+        const box = document.getElementById('salaryBox');
+        const iconEl = document.getElementById('hideSalaryIcon');
+        
+        if (isSalaryHidden) {
+            box.style.display = 'none';
+            iconEl.innerText = 'visibility_off';
+        } else {
+            box.style.display = 'block';
+            iconEl.innerText = 'visibility';
+        }
     }
+    // Apply initial state on load
+    if (isSalaryHidden) {
+        document.getElementById('salaryBox').style.display = 'none';
+        document.getElementById('hideSalaryIcon').innerText = 'visibility_off';
+    } else {
+        document.getElementById('hideSalaryIcon').innerText = 'visibility';
+    }
+    
     document.getElementById('settingsMenu').style.display = 'none';
     const request = indexedDB.open("M3WorkTrackerDB_v6", 1);
     request.onupgradeneeded = e => { db = e.target.result; db.createObjectStore("shifts", { keyPath: "id", autoIncrement: true }); };
@@ -373,7 +394,7 @@
             });
             
             // Update Text Elements
-            document.getElementById('totalSalary').innerText = isSalaryHidden ? '₪••••' : `₪${tP.toLocaleString()}`;
+            document.getElementById('totalSalary').innerText = `₪${Math.round(tP).toLocaleString()}`;
             document.getElementById('statShifts').innerText = mShifts;
             document.getElementById('statHours').innerText = formatTime(mHours);
             document.getElementById('statAvg').innerText = mShifts > 0 ? formatTime(mHours / mShifts) : "0:00";

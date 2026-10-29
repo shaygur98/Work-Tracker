@@ -1,4 +1,3 @@
-[README.md](https://github.com/user-attachments/files/34133773/README.md)
 # Work Time
 
 A shift and salary tracker that runs entirely in the browser and can be installed as an app (PWA). Shifts are stored on the device (IndexedDB) and can optionally be backed up to your own Google Drive.

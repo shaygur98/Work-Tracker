@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Work Time</title>
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./apple-icon.png">
@@ -10,301 +10,464 @@
 
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#6750A4">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wdth,wght@8..144,100..125,400..800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    
+
     <style>
         :root {
             --seed: #6750A4;
             --p: var(--seed); --on-p: #ffffff;
-            --p-cont: color-mix(in srgb, var(--seed), white 85%);
-            --on-p-cont: color-mix(in srgb, var(--seed), black 60%);
-            --s-cont: color-mix(in srgb, var(--seed), white 75%);
-            --on-s-cont: color-mix(in srgb, var(--seed), black 40%);
+            --p-cont: color-mix(in srgb, var(--seed), white 88%);
+            --on-p-cont: color-mix(in srgb, var(--seed), black 55%);
+            --s-cont: color-mix(in srgb, var(--seed), white 82%);
+            --on-s-cont: color-mix(in srgb, var(--seed), black 45%);
             --surf: color-mix(in srgb, var(--seed), white 96%);
-            --surf-v: color-mix(in srgb, var(--seed), white 80%);
-            --on-surf: #1c1b1f; --out: color-mix(in srgb, var(--seed), black 30%);
             --card-bg: #ffffff;
+            --line: color-mix(in srgb, var(--seed), white 86%);
+            --on-surf: #1c1b1f; --muted: #625b71; --danger: #ba1a1a;
+            --inv-surf: #322f35; --on-inv-surf: #f5eff7; --inv-p: #d0bcff;
+            --display: 'Roboto Flex', 'Roboto', sans-serif;
+            /* M3 Expressive motion: springy for spatial moves, emphasized for fades */
+            --spring: linear(0, 0.06 2%, 0.23 5%, 0.5 9.5%, 0.79 15%, 0.95 21%, 1.03 28%, 1.05 34%, 1.03 44%, 1.005 58%, 1);
+            --spring-fast: linear(0, 0.12 3%, 0.45 9%, 0.84 17%, 1.04 26%, 1.07 33%, 1.03 45%, 1);
+            --emph: cubic-bezier(0.2, 0, 0, 1);
         }
 
         /* Dark Mode variables applied via class for JS control */
         .dark-mode {
-            --on-p: #381e72;
-            --p-cont: color-mix(in srgb, var(--seed), black 40%);
+            --p: color-mix(in srgb, var(--seed), white 45%);
+            --on-p: color-mix(in srgb, var(--seed), black 70%);
+            --p-cont: color-mix(in srgb, var(--seed), black 55%);
             --on-p-cont: color-mix(in srgb, var(--seed), white 80%);
-            --s-cont: color-mix(in srgb, var(--seed), black 60%);
-            --on-s-cont: color-mix(in srgb, var(--seed), white 70%);
-            --surf: #1c1b1f; 
-            --surf-v: #49454f; --on-surf: #e6e1e5; --out: #938f99; --card-bg: #2b2930;
+            --s-cont: color-mix(in srgb, var(--seed), black 50%);
+            --on-s-cont: color-mix(in srgb, var(--seed), white 75%);
+            --surf: #141218; --card-bg: #1d1b20; --line: #36343b;
+            --on-surf: #e6e0e9; --muted: #cac4d0; --danger: #ffb4ab;
+            --inv-surf: #e6e0e9; --on-inv-surf: #322f35; --inv-p: #6750A4;
         }
 
+        * { box-sizing: border-box; }
+        [hidden] { display: none !important; }
         body {
-            font-family: 'Google Sans', 'Roboto', sans-serif;
+            font-family: 'Roboto', sans-serif;
             background-color: var(--surf); color: var(--on-surf);
-            margin: 0; padding: 16px; display: flex; flex-direction: column; align-items: center;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0; padding: 12px 16px 32px;
+            transition: background-color 0.3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .container { max-width: 560px; margin: 0 auto; }
+
+        .app-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        h1 { font-family: var(--display); font-size: 30px; font-weight: 700; font-variation-settings: 'wdth' 112; letter-spacing: -0.4px; margin: 0; color: var(--p); }
+        h2 { font-size: 12px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--p); margin: 0 0 16px; }
+        h3 { font-size: 14px; font-weight: 500; margin: 0 0 12px; }
+        .muted { color: var(--muted); }
+
+        .card {
+            background: var(--card-bg); border: 1px solid var(--line); border-radius: 28px; padding: 20px; margin-bottom: 16px;
+            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.4s var(--emph);
+        }
+        .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .card-head h2 { margin: 0; }
+        #logCard.editing { border-color: var(--p); box-shadow: 0 0 0 3px color-mix(in srgb, var(--p) 18%, transparent); }
+
+        .field { display: block; min-width: 0; }
+        .field > span { display: block; font-size: 12px; color: var(--muted); margin: 0 0 6px 4px; }
+        input, select {
+            width: 100%; min-width: 0; font: inherit; font-size: 16px; color: var(--on-surf);
+            background: var(--surf); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px;
+            color-scheme: light;
+        }
+        .dark-mode input, .dark-mode select { color-scheme: dark; }
+        input:focus, select:focus { outline: 2px solid var(--p); outline-offset: -1px; }
+        .stack > * + * { margin-top: 12px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .time-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end; }
+
+        .btn {
+            height: 48px; border-radius: 24px; border: none; font: inherit; font-size: 15px; font-weight: 500;
+            padding: 0 20px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            position: relative; overflow: hidden; white-space: nowrap;
+            transition: border-radius 0.45s var(--spring), transform 0.45s var(--spring), filter 0.2s, background-color 0.3s;
+        }
+        .btn:hover { filter: brightness(0.95); }
+        /* Expressive shape morph: pressed buttons square up, then spring back */
+        .btn:active { border-radius: 12px; transform: scale(0.97); transition-duration: 0.12s; }
+        .btn:disabled { opacity: 0.5; cursor: default; }
+        .btn .material-icons-round { font-size: 20px; }
+        .filled { background: var(--p); color: var(--on-p); }
+        .tonal { background: var(--s-cont); color: var(--on-s-cont); }
+        .outline { background: transparent; border: 1px solid var(--line); color: var(--p); }
+        .text-btn { background: transparent; color: var(--p); height: 36px; padding: 0 12px; }
+        .danger { color: var(--danger); }
+        .wide { width: 100%; }
+        .now-btn { height: 46px; border-radius: 12px; padding: 0 14px; }
+        .now-btn:active { border-radius: 23px; }
+        .form-actions { display: flex; gap: 8px; margin-top: 16px; }
+        .form-actions .filled { flex: 1; }
+        .icon-btn {
+            width: 40px; height: 40px; border-radius: 50%; border: none; background: transparent; color: var(--on-surf);
+            display: grid; place-items: center; cursor: pointer; padding: 0; position: relative; overflow: hidden;
+            transition: background-color 0.2s, border-radius 0.45s var(--spring), transform 0.45s var(--spring);
+        }
+        .icon-btn:hover { background: var(--s-cont); }
+        .icon-btn:active { border-radius: 12px; transform: scale(0.92); }
+        .app-bar .icon-btn { width: 48px; height: 48px; background: var(--s-cont); color: var(--on-s-cont); }
+        .app-bar .icon-btn .material-icons-round { transition: transform 0.6s var(--spring); }
+        .app-bar .icon-btn:active .material-icons-round { transform: rotate(90deg); }
+
+        /* Hero card for the pay period */
+        .period-card { background: var(--p-cont); border-color: transparent; color: var(--on-p-cont); }
+        .period-card .icon-btn { color: var(--on-p-cont); }
+        .period-card .icon-btn:hover { background: color-mix(in srgb, var(--on-p-cont) 10%, transparent); }
+        .period-nav { display: flex; align-items: center; justify-content: space-between; }
+        .period-title { text-align: center; }
+        #periodName { font-family: var(--display); font-size: 22px; font-weight: 650; font-variation-settings: 'wdth' 108; }
+        #periodRange { font-size: 13px; margin-top: 2px; color: color-mix(in srgb, var(--on-p-cont) 75%, transparent); }
+        .stats { display: grid; grid-template-columns: 1.2fr 1fr 1.2fr; gap: 6px; margin: 16px 0; }
+        .stat { background: color-mix(in srgb, var(--card-bg) 62%, transparent); border-radius: 20px; padding: 14px 6px 12px; text-align: center; }
+        .stats .stat:first-child { border-radius: 20px 8px 8px 20px; }
+        .stats .stat:last-child { border-radius: 8px 20px 20px 8px; }
+        .stat-val { font-family: var(--display); font-size: 26px; font-weight: 700; font-variation-settings: 'wdth' 105; color: var(--p); font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .stat-label { font-size: 12px; color: color-mix(in srgb, var(--on-p-cont) 75%, transparent); margin-top: 2px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .stat-label .material-icons-round { font-size: 14px; }
+        button.stat { border: none; font: inherit; color: inherit; cursor: pointer; position: relative; overflow: hidden; }
+        .export-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+        .period-card .outline { border-color: color-mix(in srgb, var(--on-p-cont) 30%, transparent); color: var(--on-p-cont); }
+
+        .log-head { display: flex; align-items: baseline; justify-content: space-between; padding: 0 8px; margin: 8px 0 10px; }
+        .log-head h2 { margin: 0; }
+        .log-head span { font-size: 13px; }
+        /* Connected list: rows share small inner corners, the group gets the large outer ones */
+        .log-list { display: flex; flex-direction: column; gap: 3px; margin-bottom: 16px; }
+        .log-row {
+            display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%;
+            background: var(--card-bg); border: none; border-radius: 6px; padding: 14px 18px;
+            font: inherit; color: inherit; text-align: left; cursor: pointer; position: relative; overflow: hidden;
+            transition: background-color 0.25s, border-radius 0.45s var(--spring), transform 0.45s var(--spring), box-shadow 0.3s;
+        }
+        .log-row:first-child { border-top-left-radius: 24px; border-top-right-radius: 24px; }
+        .log-row:last-child { border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; }
+        .log-row:hover { background: var(--p-cont); }
+        .log-row:active { border-radius: 24px; transform: scale(0.98); }
+        .log-row.editing { background: var(--p-cont); box-shadow: inset 0 0 0 2px var(--p); }
+        .log-row .l1 { font-size: 15px; font-weight: 500; }
+        .log-row .l2 { font-size: 13px; color: var(--muted); margin-top: 2px; }
+        .log-row .num { text-align: right; font-variant-numeric: tabular-nums; }
+        .empty { text-align: center; color: var(--muted); padding: 24px 0; font-size: 14px; }
+        .hint { text-align: center; font-size: 12px; color: var(--muted); margin: -4px 0 16px; }
+
+        #graphContainer svg { width: 100%; height: auto; display: block; overflow: visible; }
+        .chart-label { font-size: 10px; fill: var(--muted); }
+        .chart-label.sel { fill: var(--p); font-weight: 700; }
+
+        .group + .group { border-top: 1px solid var(--line); padding-top: 20px; margin-top: 20px; }
+        .group-note { font-size: 12px; color: var(--muted); margin: 6px 0 0 4px; }
+        .btn-row { display: flex; gap: 8px; margin-top: 12px; }
+        .btn-row .btn { flex: 1; }
+        #cloudStatus { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
+        .color-dots { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+        .color-dot { width: 32px; height: 32px; border-radius: 50%; border: 3px solid var(--card-bg); box-shadow: 0 0 0 1px var(--line); cursor: pointer; padding: 0; }
+        .color-dot.selected { box-shadow: 0 0 0 2px var(--on-surf); }
+        #fileInput { display: none !important; }
+
+        /* --- Motion --- */
+        @keyframes rise { from { opacity: 0; transform: translateY(18px) scale(0.98); } }
+        @keyframes rowIn { from { opacity: 0; transform: translateY(14px) scale(0.97); } }
+        @keyframes slideFromRight { from { opacity: 0; transform: translateX(28px); } }
+        @keyframes slideFromLeft { from { opacity: 0; transform: translateX(-28px); } }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.6); } }
+        @keyframes flash { 0%, 40% { background: var(--s-cont); } }
+        @keyframes draw { to { stroke-dashoffset: 0; } }
+        @keyframes ripple { to { transform: scale(1); opacity: 0; } }
+
+        .container > * { animation: rise 0.7s var(--spring) both; }
+        .container > *:nth-child(2) { animation-delay: 60ms; }
+        .container > *:nth-child(3) { animation-delay: 120ms; }
+        .container > *:nth-child(n+4) { animation-delay: 180ms; }
+        .log-row.enter { animation: rowIn 0.6s var(--spring) both; animation-delay: calc(var(--i) * 35ms); }
+        .log-row.flash { animation: flash 1.4s var(--emph); }
+        .slide-next { animation: slideFromRight 0.55s var(--spring) both; }
+        .slide-prev { animation: slideFromLeft 0.55s var(--spring) both; }
+        #deleteBtn:not([hidden]), #cancelEditBtn:not([hidden]) { animation: popIn 0.45s var(--spring-fast) both; }
+        .chart-line.draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1s var(--emph) 0.15s forwards; }
+        .chart-dot { transform-box: fill-box; transform-origin: center; transition: r 0.4s var(--spring); }
+        .chart-dot.pop { animation: popIn 0.5s var(--spring-fast) both; animation-delay: calc(var(--i) * 45ms + 350ms); }
+        .ripple {
+            position: absolute; border-radius: 50%; pointer-events: none; background: currentColor;
+            opacity: 0.16; transform: scale(0); animation: ripple 0.6s var(--emph) forwards;
         }
 
-        .container { width: 100%; max-width: 550px; position: relative; padding-top: 40px;}
-        .settings-fab-container { position: absolute; top: 0; right: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 100; }
-        .settings-menu { background: var(--card-bg); border-radius: 24px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); border: 1px solid var(--surf-v); display: none; flex-direction: column; gap: 12px; width: 220px; }
-        .m3-card { background-color: var(--card-bg); border-radius: 28px; padding: 24px; margin-bottom: 16px; border: 1px solid var(--surf-v); }
-        h1 { font-size: 28px; font-weight: 400; margin-bottom: 24px; text-align: center; color: var(--p); }
-        h2 { font-size: 11px; font-weight: 700; margin-bottom: 12px; letter-spacing: 0.8px; color: var(--p); text-transform: uppercase;}
-        .input-field, select { background: var(--surf); border: 1px solid var(--surf-v); border-radius: 12px; padding: 16px; font-size: 16px; color: var(--on-surf); width: 100%; box-sizing: border-box; margin-bottom: 16px; }
-        .row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
-        .flex-1 { flex: 1; }
-        .m3-btn { height: 56px; border-radius: 28px; border: none; font-weight: 500; padding: 0 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; transition: 0.2s; }
-        .btn-filled { background-color: var(--p); color: var(--on-p); width: 100%; }
-        .btn-tonal { background-color: var(--s-cont); color: var(--on-s-cont); }
-        .btn-now { height: 48px; padding: 0 16px; margin-top: 14px; border-radius: 16px; }
-        .btn-outline { background: transparent; border: 1px solid var(--p); height: 48px; font-size: 13px; color: var(--p); border-radius: 16px;}
-        .salary-display { background-color: var(--p-cont); border-radius: 28px; padding: 32px; text-align: center; margin-bottom: 16px; border: 1px solid var(--p); }
-        .salary-amt { font-size: 45px; font-weight: 700; color: var(--on-p-cont); }
-        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
-        td { background: var(--card-bg); padding: 16px 12px; font-size: 14px; border-top: 1px solid var(--surf-v); border-bottom: 1px solid var(--surf-v); }
-        td:first-child { border-left: 1px solid var(--surf-v); border-radius: 16px 0 0 16px; }
-        td:last-child { border-right: 1px solid var(--surf-v); border-radius: 0 16px 16px 0; text-align: right; }
-        .delete-btn { color: #BA1A1A; cursor: pointer; }
-        .color-dot { width: 34px; height: 34px; border-radius: 50%; border: 3px solid #fff; cursor: pointer; display: inline-block; margin: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        #fileInput { display: none !important; }
-        .salary-display { position: relative; background-color: var(--p-cont); border-radius: 28px; padding: 32px; text-align: center; margin-bottom: 16px; border: 1px solid var(--p); }
-        .hide-salary-btn { position: absolute; top: 16px; right: 16px; background: transparent; border: none; color: var(--p); opacity: 0.4; cursor: pointer; border-radius: 50%; padding: 4px; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
-        .hide-salary-btn:hover { opacity: 0.8; background: var(--s-cont); }
+        .snackbar {
+            position: fixed; left: 50%; bottom: 20px; z-index: 10; width: min(calc(100% - 32px), 528px);
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            background: var(--inv-surf); color: var(--on-inv-surf); border-radius: 16px; padding: 6px 8px 6px 18px; min-height: 52px;
+            font-size: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+            transform: translate(-50%, 140%); opacity: 0; transition: transform 0.5s var(--spring), opacity 0.25s;
+        }
+        .snackbar.show { transform: translate(-50%, 0); opacity: 1; }
+        .snack-btn { background: transparent; border: none; color: var(--inv-p); font: inherit; font-weight: 600; padding: 10px 14px; border-radius: 12px; cursor: pointer; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; transition-duration: 0.01ms !important; }
+        }
+
+        footer { text-align: center; margin-top: 24px; color: var(--muted); font-size: 12px; }
+        footer a { color: var(--p); text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; font-weight: 500; margin-top: 8px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="settings-fab-container">
-        <button class="m3-btn btn-tonal" style="width:48px; height:48px; padding:0; border-radius: 16px;" onclick="toggleSettings()">
-            <span class="material-icons-round">palette</span>
+    <header class="app-bar">
+        <h1>Shift Tracker</h1>
+        <button class="icon-btn" onclick="document.getElementById('settingsCard').scrollIntoView({ behavior: 'smooth' })" aria-label="Settings">
+            <span class="material-icons-round">settings</span>
         </button>
-        <div id="settingsMenu" class="settings-menu" style="display: none;">
-            <h2>Appearance</h2>
-            <select id="themeSelector" onchange="changeTheme(this.value)">
-                <option value="system">System Default</option>
+    </header>
+
+    <section class="card" id="logCard">
+        <div class="card-head">
+            <h2 id="formTitle">New shift</h2>
+            <button class="btn text-btn" id="cancelEditBtn" onclick="cancelEdit()" hidden>Cancel</button>
+        </div>
+        <div class="stack">
+            <label class="field"><span>Date</span><input type="date" id="date"></label>
+            <div class="time-row">
+                <label class="field"><span>Start</span><input type="time" id="start" value="08:00"></label>
+                <label class="field"><span>End</span><input type="time" id="end"></label>
+                <button class="btn tonal now-btn" onclick="setNow()">Now</button>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn outline danger" id="deleteBtn" onclick="deleteEntry()" hidden>
+                <span class="material-icons-round">delete</span> Delete
+            </button>
+            <button class="btn filled" onclick="saveEntry()">
+                <span class="material-icons-round" id="saveIcon">add</span> <span id="saveLabel">Save shift</span>
+            </button>
+        </div>
+    </section>
+
+    <section class="card period-card">
+        <div class="period-nav">
+            <button class="icon-btn" onclick="shiftPeriod(-1)" aria-label="Previous period"><span class="material-icons-round">chevron_left</span></button>
+            <div class="period-title">
+                <div id="periodName"></div>
+                <div id="periodRange" class="muted"></div>
+            </div>
+            <button class="icon-btn" onclick="shiftPeriod(1)" aria-label="Next period"><span class="material-icons-round">chevron_right</span></button>
+        </div>
+        <div class="stats">
+            <div class="stat"><div class="stat-val" id="statHours">0:00</div><div class="stat-label">Hours</div></div>
+            <div class="stat"><div class="stat-val" id="statDays">0</div><div class="stat-label">Days</div></div>
+            <button class="stat" onclick="toggleSalaryVisibility()" aria-label="Show or hide pay">
+                <div class="stat-val" id="statPay">₪0</div>
+                <div class="stat-label">Pay <span class="material-icons-round" id="hideSalaryIcon">visibility</span></div>
+            </button>
+        </div>
+        <div class="export-row">
+            <button class="btn filled" onclick="exportPeriod('pdf')"><span class="material-icons-round">picture_as_pdf</span> Export PDF</button>
+            <button class="btn outline" onclick="exportPeriod('csv')">CSV</button>
+        </div>
+    </section>
+
+    <div class="log-head">
+        <h2>Shifts</h2>
+        <span class="muted" id="shiftCount"></span>
+    </div>
+    <div class="log-list" id="logList"></div>
+    <div class="hint" id="logHint">Tap a shift to edit or delete it</div>
+
+    <section class="card">
+        <h2 id="chartTitle">Hours per month</h2>
+        <div id="graphContainer"></div>
+    </section>
+
+    <section class="card" id="settingsCard">
+        <h2>Settings & data</h2>
+
+        <div class="group">
+            <h3>Pay</h3>
+            <div class="grid-2">
+                <label class="field"><span>Hourly rate (₪)</span>
+                    <input type="number" id="rate" value="60" inputmode="decimal" oninput="localStorage.setItem('rate', this.value); renderEntries()">
+                </label>
+                <label class="field"><span>Pay period starts on day</span>
+                    <select id="payStartDay" onchange="setPayStartDay(this.value)"></select>
+                </label>
+            </div>
+            <div class="group-note">For example, 26 means each period runs from the 26th to the 25th of the next month.</div>
+        </div>
+
+        <div class="group">
+            <h3>Export a custom range</h3>
+            <div class="grid-2">
+                <label class="field"><span>From</span><input type="date" id="reportStart"></label>
+                <label class="field"><span>To</span><input type="date" id="reportEnd"></label>
+            </div>
+            <div class="btn-row">
+                <button class="btn tonal" onclick="exportCustom('pdf')"><span class="material-icons-round">picture_as_pdf</span> PDF</button>
+                <button class="btn tonal" onclick="exportCustom('csv')"><span class="material-icons-round">grid_on</span> CSV</button>
+            </div>
+        </div>
+
+        <div class="group">
+            <h3>Cloud backup</h3>
+            <div id="cloudStatus"></div>
+            <div id="cloudDisconnected">
+                <button class="btn filled wide" id="connectCloudBtn" onclick="connectCloud()">
+                    <span class="material-icons-round">cloud</span> Connect Google Drive
+                </button>
+            </div>
+            <div id="cloudConnected" style="display: none;">
+                <div class="btn-row" style="margin-top: 0;">
+                    <button class="btn tonal" onclick="cloudBackup(true)"><span class="material-icons-round">cloud_upload</span> Back up</button>
+                    <button class="btn tonal" onclick="cloudRestore()"><span class="material-icons-round">cloud_download</span> Restore</button>
+                </div>
+                <button class="btn text-btn wide" style="margin-top: 8px;" onclick="disconnectCloud()">Disconnect Google Drive</button>
+            </div>
+        </div>
+
+        <div class="group">
+            <h3>Backup file</h3>
+            <div class="btn-row" style="margin-top: 0;">
+                <button class="btn outline" onclick="exportBackup()"><span class="material-icons-round">download</span> Export</button>
+                <button class="btn outline" onclick="document.getElementById('fileInput').click()"><span class="material-icons-round">upload</span> Import</button>
+            </div>
+            <input type="file" id="fileInput" accept=".json" onchange="importBackup(event)">
+        </div>
+
+        <div class="group">
+            <h3>Appearance</h3>
+            <select id="themeSelector" onchange="changeTheme(this.value)" aria-label="Theme">
+                <option value="system">System default</option>
                 <option value="light">Light</option>
                 <option value="dark">Dark</option>
             </select>
-            <h2>Accent Color</h2>
-            <div style="display:flex; flex-wrap:wrap; justify-content: center;">
-                <div class="color-dot" style="background:#6750A4" onclick="setAccent('#6750A4')"></div>
-                <div class="color-dot" style="background:#006a6a" onclick="setAccent('#006a6a')"></div>
-                <div class="color-dot" style="background:#984061" onclick="setAccent('#984061')"></div>
-                <div class="color-dot" style="background:#3b6939" onclick="setAccent('#3b6939')"></div>
-                <div class="color-dot" style="background:#2e5da8" onclick="setAccent('#2e5da8')"></div>
-                <div class="color-dot" style="background:#8b5000" onclick="setAccent('#8b5000')"></div>
+            <div class="color-dots" id="colorDots">
+                <button class="color-dot" style="background:#6750A4" data-color="#6750A4" onclick="setAccent('#6750A4')" aria-label="Purple"></button>
+                <button class="color-dot" style="background:#006a6a" data-color="#006a6a" onclick="setAccent('#006a6a')" aria-label="Teal"></button>
+                <button class="color-dot" style="background:#984061" data-color="#984061" onclick="setAccent('#984061')" aria-label="Pink"></button>
+                <button class="color-dot" style="background:#3b6939" data-color="#3b6939" onclick="setAccent('#3b6939')" aria-label="Green"></button>
+                <button class="color-dot" style="background:#2e5da8" data-color="#2e5da8" onclick="setAccent('#2e5da8')" aria-label="Blue"></button>
+                <button class="color-dot" style="background:#8b5000" data-color="#8b5000" onclick="setAccent('#8b5000')" aria-label="Brown"></button>
             </div>
         </div>
-    </div>
+    </section>
 
-    <h1>Shift Tracker</h1>
-
-    <div class="m3-card">
-        <h2>New Log</h2>
-        <input type="date" id="date" class="input-field">
-        <div class="row" style="align-items: center; margin-bottom: 16px;">
-            <div class="flex-1"><input type="time" id="start" class="input-field" value="08:00" style="margin-bottom: 0;"></div>
-            <div class="flex-1"><input type="time" id="end" class="input-field" style="margin-bottom: 0;"></div>
-            <button class="m3-btn btn-tonal" onclick="setNow()" style="height: 54px; padding: 0 16px; border-radius: 12px; margin-bottom: 0;">NOW</button>
-        </div>
-        <button class="m3-btn btn-filled" onclick="addEntry()"><span class="material-icons-round">add</span> Save Shift</button>
-    </div>
-
-    <div style="width: 100%; display: flex; flex-direction: column; align-items: flex-end; margin-bottom: 16px;">
-        <button class="hide-salary-btn" style="position: static; margin-bottom: 8px;" onclick="toggleSalaryVisibility()">
-            <span class="material-icons-round" id="hideSalaryIcon" style="font-size: 20px;">visibility_off</span>
-        </button>
-        
-        <div class="salary-display" id="salaryBox" style="box-sizing: border-box; width: 100%; margin-bottom: 0;">
-            <div class="salary-amt" id="totalSalary">₪0</div>
-            <div style="font-size: 14px; opacity: 0.7;">Gross Salary in Range</div>
-        </div>
-    </div>
-
-    <div class="m3-card">
-        <h2>Report & Data</h2>
-        <div class="row">
-            <div class="flex-1"><label>FROM</label><input type="date" id="reportStart" class="input-field"></div>
-            <div class="flex-1"><label>TO</label><input type="date" id="reportEnd" class="input-field"></div>
-        </div>
-        <div style="margin-bottom: 24px;">
-            <label style="font-size:11px; font-weight:700; color:var(--p); letter-spacing:0.8px; display:block; margin-bottom:8px; padding-left:4px;">HOURLY RATE (₪)</label>
-            <input type="number" id="rate" value="60" class="input-field" style="margin-bottom: 0;" oninput="renderEntries()">
-        </div>
-        
-        <div style="height: 1px; background-color: var(--surf-v); margin: 24px 0;"></div>
-        
-        <h2 style="margin-top: 0; margin-bottom: 16px;">Export & Backup</h2>
-        
-        <div class="row" style="margin-bottom: 16px; gap: 8px;">
-            <button class="m3-btn btn-tonal flex-1" onclick="generatePDF()">
-                <span class="material-icons-round">picture_as_pdf</span> PDF
-            </button>
-            <button class="m3-btn btn-tonal flex-1" onclick="exportCSV()">
-                <span class="material-icons-round">grid_on</span> CSV
-            </button>
-        </div>
-        
-        <div class="row" style="margin-bottom: 0; gap: 8px;">
-            <button class="m3-btn btn-outline flex-1" onclick="exportBackup()">
-                <span class="material-icons-round">download</span> Export
-            </button>
-            <button class="m3-btn btn-outline flex-1" onclick="document.getElementById('fileInput').click()">
-                <span class="material-icons-round">upload</span> Import
-            </button>
-            <input type="file" id="fileInput" accept=".json" onchange="importBackup(event)">
-        </div>
-    </div>
-
-    <div class="row" style="align-items: center; justify-content: space-between; margin-top: 8px; margin-bottom: 8px; padding: 0 4px;">
-    <h2 style="margin: 0; font-size: 12px;">SHIFT LOG VIEW</h2>
-    <div style="display: flex; gap: 8px; align-items: center;">
-        <button class="m3-btn btn-outline" style="height: 36px; width: 36px; padding: 0; border-radius: 12px;" onclick="shiftViewMonth(-1)">
-            <span class="material-icons-round" style="font-size: 20px;">chevron_left</span>
-        </button>
-        <input type="month" id="viewMonth" class="input-field" style="width: auto; margin-bottom: 0; height: 36px; padding: 0 12px;" onchange="renderEntries()">
-        <button class="m3-btn btn-outline" style="height: 36px; width: 36px; padding: 0; border-radius: 12px;" onclick="shiftViewMonth(1)">
-            <span class="material-icons-round" style="font-size: 20px;">chevron_right</span>
-        </button>
-    </div>
-</div>
-    <table id="dataTable"><tbody id="logBody"></tbody></table>
-    
-    <div class="m3-card" style="margin-top: 16px; margin-bottom: 8px;">
-        <h2 style="margin-top: 0; margin-bottom: 16px;">Monthly Overview</h2>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div style="background: var(--surf); padding: 16px; border-radius: 16px; border: 1px solid var(--surf-v); text-align: center;">
-                <div style="font-size: 11px; font-weight: 700; color: var(--out); margin-bottom: 4px; letter-spacing: 0.5px;">DAYS WORKED</div>
-                <div id="statShifts" style="font-size: 24px; font-weight: 500; color: var(--p);">0</div>
-            </div>
-            <div style="background: var(--surf); padding: 16px; border-radius: 16px; border: 1px solid var(--surf-v); text-align: center;">
-                <div style="font-size: 11px; font-weight: 700; color: var(--out); margin-bottom: 4px; letter-spacing: 0.5px;">TOTAL HOURS</div>
-                <div id="statHours" style="font-size: 24px; font-weight: 500; color: var(--p);">0:00</div>
-            </div>
-            <div style="background: var(--surf); padding: 16px; border-radius: 16px; border: 1px solid var(--surf-v); text-align: center;">
-                <div style="font-size: 11px; font-weight: 700; color: var(--out); margin-bottom: 4px; letter-spacing: 0.5px;">AVG SHIFT</div>
-                <div id="statAvg" style="font-size: 24px; font-weight: 500; color: var(--p);">0:00</div>
-            </div>
-            <div style="background: var(--surf); padding: 16px; border-radius: 16px; border: 1px solid var(--surf-v); text-align: center;">
-                <div style="font-size: 11px; font-weight: 700; color: var(--out); margin-bottom: 4px; letter-spacing: 0.5px;">MONTHLY PAY</div>
-                <div id="statPay" style="font-size: 24px; font-weight: 500; color: var(--p);">₪0</div>
-            </div>
-            <div id="graphContainer" style="grid-column: 1 / -1; height: 160px; width: 100%; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--surf-v);">               </div>
-        </div>
-    </div>
-    
-    <div style="text-align: center; margin-top: 32px; margin-bottom: 24px; color: var(--on-surf); opacity: 0.7;">
-        <div style="font-size: 11px; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px;">VERSION 1.5.6</div>
-        <a href="https://github.com/shaygur98/work-tracker" target="_blank" style="color: var(--p); text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; font-weight: 500;">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57C20.565 21.795 24 17.31 24 12c0-6.63-5.37-12-12-12z"/></svg>
+    <footer>
+        <div>Version 1.8.0</div>
+        <a href="https://github.com/shaygur98/work-tracker" target="_blank">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 0C5.37 0 0 5.370 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.410-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57C20.565 21.795 24 17.31 24 12c0-6.63-5.37-12-12-12z"/></svg>
             Source Code
         </a>
-    </div>
+    </footer>
+</div>
+
+<div class="snackbar" id="snackbar" role="status" aria-live="polite">
+    <span id="snackText"></span>
+    <button class="snack-btn" id="snackAction" hidden></button>
 </div>
 
 <script>
     let db;
-    // Privacy toggle state
     let isSalaryHidden = localStorage.getItem('hideSalary') === 'true';
+    let editingId = null;
+    let editingShift = null;
+    let view; // the pay period on screen, as { y, m } of the month it ends in
+    // One-shot animation requests, consumed by the next renderEntries()
+    let animateList = true, slideDir = 0, flashId = null;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    const $ = id => document.getElementById(id);
+    const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    const WEEKDAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    const pad = n => String(n).padStart(2, '0');
+    const toISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    const parseISO = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+    const shortDate = d => `${d.getDate()} ${MONTHS[d.getMonth()].slice(0, 3)}`;
+    const money = n => '₪' + Math.round(n).toLocaleString('en-US');
+
+    // --- Pay periods ---
+    // A period is named after the month it ends in: with a start day of 26,
+    // "October" runs 26 Sep – 25 Oct. A start day of 1 gives plain calendar months.
+    const payStartDay = () => parseInt(localStorage.getItem('payStartDay'), 10) || 1;
+
+    function periodOf(date) {
+        let y = date.getFullYear(), m = date.getMonth() + 1;
+        if (payStartDay() > 1 && date.getDate() >= payStartDay()) { m++; if (m > 12) { m = 1; y++; } }
+        return { y, m };
+    }
+
+    function periodRange({ y, m }) {
+        const sd = payStartDay();
+        const start = new Date(y, m - (sd > 1 ? 2 : 1), sd);
+        const end = new Date(start.getFullYear(), start.getMonth() + 1, sd - 1);
+        return { start: toISO(start), end: toISO(end) };
+    }
+
+    function shiftPeriod(dir) {
+        let { y, m } = view;
+        m += dir;
+        if (m > 12) { m = 1; y++; }
+        if (m < 1) { m = 12; y--; }
+        view = { y, m };
+        slideDir = dir;
+        animateList = true;
+        renderEntries();
+    }
+
+    function setPayStartDay(v) {
+        localStorage.setItem('payStartDay', v);
+        view = periodOf(new Date());
+        animateList = true;
+        setCustomRangeToView();
+        renderEntries();
+    }
+
+    function setCustomRangeToView() {
+        const { start, end } = periodRange(view);
+        $('reportStart').value = start;
+        $('reportEnd').value = end;
+    }
 
     function toggleSalaryVisibility() {
         isSalaryHidden = !isSalaryHidden;
         localStorage.setItem('hideSalary', isSalaryHidden);
-        
-        const box = document.getElementById('salaryBox');
-        const iconEl = document.getElementById('hideSalaryIcon');
-        
-        if (isSalaryHidden) {
-            box.style.display = 'none';
-            iconEl.innerText = 'visibility_off';
-        } else {
-            box.style.display = 'block';
-            iconEl.innerText = 'visibility';
-        }
+        renderEntries();
     }
-    // Apply initial state on load
-    if (isSalaryHidden) {
-        document.getElementById('salaryBox').style.display = 'none';
-        document.getElementById('hideSalaryIcon').innerText = 'visibility_off';
-    } else {
-        document.getElementById('hideSalaryIcon').innerText = 'visibility';
-    }
-    
-    document.getElementById('settingsMenu').style.display = 'none';
-    const request = indexedDB.open("M3WorkTrackerDB_v6", 1);
-    request.onupgradeneeded = e => { db = e.target.result; db.createObjectStore("shifts", { keyPath: "id", autoIncrement: true }); };
-    request.onsuccess = e => { db = e.target.result; renderEntries(); };
 
-    // Force menu closed when the app is resumed from the background
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
-            document.getElementById('settingsMenu').style.display = 'none';
-        }
-    });
-    // Force menu closed when restored from Android's bfcache
-    window.addEventListener('pageshow', () => {
-        document.getElementById('settingsMenu').style.display = 'none';
-    });
-    
-    const today = new Date();
-    document.getElementById('date').valueAsDate = today;
-    document.getElementById('reportStart').valueAsDate = new Date(today.getFullYear(), today.getMonth(), 1);
-    document.getElementById('reportEnd').valueAsDate = today;
-
-    // --- Dynamic Theme Logic ---
+    // --- Theme ---
     const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
+
     function applyTheme() {
         const setting = localStorage.getItem('theme') || 'system';
         const shouldBeDark = setting === 'dark' || (setting === 'system' && darkModeMediaQuery.matches);
-        
-        if (shouldBeDark) {
-            document.body.classList.add('dark-mode');
-        } else {
-            document.body.classList.remove('dark-mode');
-        }
+        document.body.classList.toggle('dark-mode', shouldBeDark);
     }
 
     // Listen for system theme changes in real-time
     darkModeMediaQuery.addEventListener('change', applyTheme);
 
-    function changeTheme(v) { 
-        localStorage.setItem('theme', v); 
-        applyTheme(); 
+    function changeTheme(v) {
+        localStorage.setItem('theme', v);
+        applyTheme();
     }
 
-    function toggleSettings() { 
-        const m = document.getElementById('settingsMenu'); 
-        m.style.display = (m.style.display === 'none' || m.style.display === '') ? 'flex' : 'none'; 
+    function applyAccent(c) {
+        document.documentElement.style.setProperty('--seed', c);
+        document.querySelectorAll('.color-dot').forEach(d => d.classList.toggle('selected', d.dataset.color === c));
     }
-    // Close settings when clicking outside
-    document.addEventListener('click', function(event) {
-        const menu = document.getElementById('settingsMenu');
-        const fabContainer = document.querySelector('.settings-fab-container');
-        
-        if (menu.style.display === 'flex' && !fabContainer.contains(event.target)) {
-            menu.style.display = 'none';
-        }
-    });
-    
-    function setAccent(c) { localStorage.setItem('accentColor', c); document.documentElement.style.setProperty('--seed', c); toggleSettings(); }
-    
-    // Initial Load
-    const savedTheme = localStorage.getItem('theme') || 'system';
-    document.getElementById('themeSelector').value = savedTheme;
-    applyTheme();
-    if(localStorage.getItem('accentColor')) setAccent(localStorage.getItem('accentColor'));
+    function setAccent(c) { localStorage.setItem('accentColor', c); applyAccent(c); }
 
-    // --- Standard App Logic ---
-    function formatTime(d) { const h = Math.floor(d); const m = Math.round((d - h) * 60); return `${h}:${m.toString().padStart(2, '0')}`; }
+    // --- Pay calculation ---
+    function formatTime(d) { const t = Math.round(d * 60); return `${Math.floor(t / 60)}:${(t % 60).toString().padStart(2, '0')}`; }
     function formatDate(s) { const [y, m, d] = s.split('-'); return `${d}/${m}/${y}`; }
-    function setNow() { document.getElementById('end').value = new Date().toTimeString().slice(0,5); }
+    function setNow() { $('end').value = new Date().toTimeString().slice(0,5); }
 
     function calculatePay(h, r) {
         if (h <= 8) return h * r;
@@ -312,164 +475,522 @@
         return (8 * r) + (2 * r * 1.25) + ((h - 10) * r * 1.5);
     }
 
-    function addEntry() {
-        const d = document.getElementById('date').value;
-        const s = document.getElementById('start').value;
-        const e = document.getElementById('end').value;
-        if (!d || !s || !e) return;
+    // Overtime is per workday: shifts on the same date share one 8h/10h threshold,
+    // so each shift is paid for the hours it adds on top of earlier shifts that day
+    function payByShift(entries, r) {
+        const pays = {}, worked = {};
+        [...entries].sort((x, y) => (x.date + x.start).localeCompare(y.date + y.start)).forEach(en => {
+            const before = worked[en.date] || 0;
+            worked[en.date] = before + en.duration;
+            pays[en.id] = calculatePay(worked[en.date], r) - calculatePay(before, r);
+        });
+        return pays;
+    }
+
+    function calcDuration(s, e) {
         const st = s.split(':'); const et = e.split(':');
         let dur = (new Date(0,0,0,et[0],et[1]) - new Date(0,0,0,st[0],st[1])) / 3600000;
         if (dur < 0) dur += 24;
+        return dur;
+    }
+
+    // --- Shift form (add and edit) ---
+    function saveEntry() {
+        const d = $('date').value, s = $('start').value, e = $('end').value;
+        if (!d || !s || !e) { (!d ? $('date') : !s ? $('start') : $('end')).focus(); return; }
+        prepareCloud();
+        const shift = { date: d, start: s, end: e, duration: calcDuration(s, e) };
+        const updating = editingId !== null;
+        if (updating) shift.id = editingId;
         const tx = db.transaction(["shifts"], "readwrite");
-        tx.objectStore("shifts").add({ date: d, start: s, end: e, duration: dur });
-        tx.oncomplete = () => { document.getElementById('end').value = ''; renderEntries(); };
-    }
-
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    document.getElementById('viewMonth').value = `${yyyy}-${mm}`;
-
-    function shiftViewMonth(dir) {
-        const vm = document.getElementById('viewMonth');
-        if (!vm.value) return;
-        
-        let [y, m] = vm.value.split('-').map(Number);
-        m += dir;
-        
-        if (m > 12) { m = 1; y++; }
-        if (m < 1) { m = 12; y--; }
-        
-        vm.value = `${y}-${String(m).padStart(2, '0')}`;
-        renderEntries();
-    }
-    
-    function renderEntries() {
-        const r = parseFloat(document.getElementById('rate').value) || 0;
-        const sR = document.getElementById('reportStart').value;
-        const eR = document.getElementById('reportEnd').value;
-        const viewMonth = document.getElementById('viewMonth').value; 
-        const b = document.getElementById('logBody');
-        
-        b.innerHTML = ''; 
-        let tP = 0; 
-        let mShifts = 0, mHours = 0, mPay = 0; 
-        
-        // Setup for the yearly line graph
-        const [viewY, viewM] = viewMonth.split('-');
-        const today = new Date();
-        // Limit the graph to the current month if we are looking at the current year
-        const maxGraphMonth = (parseInt(viewY) === today.getFullYear()) ? today.getMonth() + 1 : 12;
-        let yearHours = {};
-        for (let i = 1; i <= maxGraphMonth; i++) yearHours[i] = 0;
-        
-        db.transaction("shifts").objectStore("shifts").getAll().onsuccess = (e) => {
-            e.target.result.sort((x,y) => new Date(y.date) - new Date(x.date)).forEach(en => {
-                const p = calculatePay(en.duration, r);
-                
-                // 1. Report logic
-                if (en.date >= sR && en.date <= eR) tP += p;
-                
-                // 2. View logic (Filters table and calculates stats)
-                if (en.date.startsWith(viewMonth)) {
-                    mShifts++;
-                    mHours += en.duration;
-                    mPay += p;
-                    
-                    b.innerHTML += `<tr>
-                        <td>${formatDate(en.date)}</td>
-                        <td style="color:var(--out)">${en.start}-${en.end}</td>
-                        <td style="font-weight:700">${formatTime(en.duration)}</td>
-                        <td>₪${p.toFixed(0)}</td>
-                        <td><span class="material-icons-round delete-btn" onclick="deleteEntry(${en.id})">delete</span></td>
-                    </tr>`;
-                }
-                
-                // 3. Graph logic (Accumulates hours for the selected year)
-                if (en.date.startsWith(viewY)) {
-                    const shiftMonth = parseInt(en.date.split('-')[1], 10);
-                    if (shiftMonth <= maxGraphMonth) {
-                        yearHours[shiftMonth] += en.duration;
-                    }
-                }
-            });
-            
-            // Update Text Elements
-            document.getElementById('totalSalary').innerText = `₪${Math.round(tP).toLocaleString()}`;
-            document.getElementById('statShifts').innerText = mShifts;
-            document.getElementById('statHours').innerText = formatTime(mHours);
-            document.getElementById('statAvg').innerText = mShifts > 0 ? formatTime(mHours / mShifts) : "0:00";
-            document.getElementById('statPay').innerText = isSalaryHidden ? '₪•••' : `₪${mPay.toFixed(0)}`;
-            
-            // Update the icon
-            const iconEl = document.getElementById('hideSalaryIcon');
-            if (iconEl) iconEl.innerText = isSalaryHidden ? 'visibility_off' : 'visibility';
-            
-           // --- Draw the Line Graph (SVG) ---
-            const g = document.getElementById('graphContainer');
-            if (maxGraphMonth === 0) {
-                g.innerHTML = '';
-                return;
-            }
-
-            const maxH = Math.max(...Object.values(yearHours), 1); 
-            let svgPoints = [];
-            let circles = '';
-            let labels = '';
-            
-            // Map the graph perfectly to a 0-280 scale
-            const stepX = 280 / Math.max(maxGraphMonth - 1, 1); 
-
-            for (let i = 1; i <= maxGraphMonth; i++) {
-                const h = yearHours[i];
-                const cx = maxGraphMonth === 1 ? 140 : (i - 1) * stepX;
-                
-                // New Y mapping: spans from 55 (bottom) up to 5 (top) to use the taller space
-                const cy = 55 - (h / maxH) * 50; 
-                
-                svgPoints.push(`${cx},${cy}`);
-                
-                circles += `<circle cx="${cx}" cy="${cy}" r="3" fill="var(--card-bg)" stroke="var(--p)" stroke-width="2" />`;
-                
-                const monthNames = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
-                // Dropped the text label down slightly to match the new bottom
-                labels += `<text x="${cx}" y="68" font-size="7" fill="var(--out)" text-anchor="middle" font-weight="500">${monthNames[i-1]}</text>`;
-            }
-
-            g.innerHTML = `
-                <div style="font-size: 11px; font-weight: 700; color: var(--out); margin-bottom: 12px; letter-spacing: 0.5px; text-align: left;">HOURS PER MONTH (${viewY})</div>
-                <svg viewBox="-10 0 300 75" style="width: 100%; height: 100%; overflow: visible; display: block;">
-                    <polyline points="${svgPoints.join(' ')}" fill="none" stroke="var(--p)" stroke-width="2.5" stroke-linejoin="round" />
-                    ${circles}
-                    ${labels}
-                </svg>
-            `;
+        const req = tx.objectStore("shifts").put(shift);
+        tx.oncomplete = () => {
+            const target = periodOf(parseISO(d)); // show the period the shift landed in
+            if (target.y !== view.y || target.m !== view.m) { animateList = true; slideDir = 0; }
+            view = target;
+            flashId = req.result;
+            resetForm();
+            renderEntries();
+            cloudBackup();
+            showSnackbar(updating ? 'Shift updated' : `Shift saved · ${formatTime(shift.duration)} h`);
         };
     }
 
-    function deleteEntry(id) { if(confirm("Delete?")) { const tx = db.transaction(["shifts"], "readwrite"); tx.objectStore("shifts").delete(id); tx.oncomplete = renderEntries; } }
+    function editEntry(id) {
+        db.transaction("shifts").objectStore("shifts").get(id).onsuccess = e => {
+            const en = e.target.result;
+            if (!en) return;
+            editingId = id;
+            editingShift = en;
+            $('date').value = en.date; $('start').value = en.start; $('end').value = en.end;
+            setEditMode(true);
+            $('logCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            renderEntries();
+        };
+    }
 
-    function generatePDF() {
-        const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        const start = document.getElementById('reportStart').value;
-        const end = document.getElementById('reportEnd').value;
+    function setEditMode(on) {
+        $('formTitle').innerText = on ? 'Edit shift' : 'New shift';
+        $('saveLabel').innerText = on ? 'Update shift' : 'Save shift';
+        $('saveIcon').innerText = on ? 'check' : 'add';
+        $('cancelEditBtn').hidden = !on;
+        $('deleteBtn').hidden = !on;
+        $('logCard').classList.toggle('editing', on);
+    }
+
+    function resetForm() {
+        editingId = null;
+        editingShift = null;
+        $('date').value = toISO(new Date());
+        $('start').value = '08:00';
+        $('end').value = '';
+        setEditMode(false);
+    }
+
+    function cancelEdit() { resetForm(); renderEntries(); }
+
+    // No confirm dialog: deleting is instant and the snackbar offers Undo
+    function deleteEntry() {
+        if (editingId === null) return;
+        const removed = editingShift;
+        prepareCloud();
+        const tx = db.transaction(["shifts"], "readwrite");
+        tx.objectStore("shifts").delete(editingId);
+        tx.oncomplete = () => {
+            resetForm();
+            renderEntries();
+            cloudBackup();
+            showSnackbar('Shift deleted', 'Undo', () => {
+                prepareCloud();
+                const undo = db.transaction(["shifts"], "readwrite");
+                undo.objectStore("shifts").put(removed);
+                undo.oncomplete = () => { flashId = removed.id; renderEntries(); cloudBackup(); };
+            });
+        };
+    }
+
+    let snackTimer;
+    function showSnackbar(text, actionLabel, action) {
+        const bar = $('snackbar'), btn = $('snackAction');
+        $('snackText').innerText = text;
+        btn.hidden = !actionLabel;
+        btn.innerText = actionLabel || '';
+        btn.onclick = () => { hide(); action(); };
+        const hide = () => { bar.classList.remove('show'); clearTimeout(snackTimer); };
+        bar.classList.add('show');
+        clearTimeout(snackTimer);
+        snackTimer = setTimeout(hide, actionLabel ? 5000 : 2500);
+    }
+
+    // Count numbers up/down to their new value instead of jumping
+    function animateValue(el, to, format) {
+        const from = parseFloat(el.dataset.v) || 0;
+        el.dataset.v = to;
+        if (reduceMotion.matches || from === to) { el.innerText = format(to); return; }
+        const t0 = performance.now(), dur = 700;
+        cancelAnimationFrame(el._raf);
+        const step = now => {
+            const t = Math.min((now - t0) / dur, 1);
+            const k = 1 - Math.pow(1 - t, 4);
+            el.innerText = format(from + (to - from) * k);
+            if (t < 1) el._raf = requestAnimationFrame(step);
+        };
+        el._raf = requestAnimationFrame(step);
+    }
+
+    function restartAnimation(el, cls) {
+        el.classList.remove('slide-next', 'slide-prev');
+        void el.offsetWidth; // reflow so the same class can play again
+        el.classList.add(cls);
+    }
+
+    // Material-style touch ripple on buttons and rows
+    document.addEventListener('pointerdown', e => {
+        const host = e.target.closest('.btn, .icon-btn, .log-row, button.stat');
+        if (!host || reduceMotion.matches) return;
+        const r = host.getBoundingClientRect();
+        const size = Math.max(r.width, r.height) * 2;
+        const dot = document.createElement('span');
+        dot.className = 'ripple';
+        dot.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - r.left - size / 2}px;top:${e.clientY - r.top - size / 2}px`;
+        host.appendChild(dot);
+        dot.addEventListener('animationend', () => dot.remove());
+    });
+
+    // --- Rendering ---
+    function renderEntries() {
+        if (!db) return;
+        const r = parseFloat($('rate').value) || 0;
+        const { start, end } = periodRange(view);
+
         db.transaction("shifts").objectStore("shifts").getAll().onsuccess = (e) => {
-            const f = e.target.result.filter(en => en.date >= start && en.date <= end).sort((x,y) => new Date(x.date) - new Date(y.date));
+            const all = e.target.result;
+            const pays = payByShift(all, r);
+            const shifts = all.filter(en => en.date >= start && en.date <= end)
+                .sort((x, y) => (y.date + y.start).localeCompare(x.date + x.start));
+            const hours = shifts.reduce((s, en) => s + en.duration, 0);
+            const pay = shifts.reduce((s, en) => s + pays[en.id], 0);
+            const showPay = p => isSalaryHidden ? '₪•••' : money(p);
+
+            $('periodName').innerText = `${MONTHS[view.m - 1]} ${view.y}`;
+            $('periodRange').innerText = `${shortDate(parseISO(start))} – ${shortDate(parseISO(end))}`;
+            animateValue($('statHours'), hours, formatTime);
+            animateValue($('statDays'), new Set(shifts.map(en => en.date)).size, n => Math.round(n));
+            if (isSalaryHidden) { $('statPay').innerText = '₪•••'; $('statPay').dataset.v = 0; }
+            else animateValue($('statPay'), pay, money);
+            $('hideSalaryIcon').innerText = isSalaryHidden ? 'visibility_off' : 'visibility';
+            $('shiftCount').innerText = shifts.length === 1 ? '1 shift' : `${shifts.length} shifts`;
+            $('logHint').hidden = shifts.length === 0;
+            if (slideDir) {
+                const cls = slideDir > 0 ? 'slide-next' : 'slide-prev';
+                restartAnimation(document.querySelector('.period-title'), cls);
+                restartAnimation(document.querySelector('.stats'), cls);
+            }
+
+            $('logList').innerHTML = shifts.length ? shifts.map((en, i) => {
+                const d = parseISO(en.date);
+                const cls = (en.id === editingId ? ' editing' : '') + (animateList ? ' enter' : '') + (en.id === flashId ? ' flash' : '');
+                return `<button class="log-row${cls}" style="--i:${Math.min(i, 12)}" onclick="editEntry(${en.id})">
+                    <div><div class="l1">${WEEKDAYS[d.getDay()]}, ${shortDate(d)}</div><div class="l2">${en.start} – ${en.end}</div></div>
+                    <div class="num"><div class="l1">${formatTime(en.duration)} h</div><div class="l2">${showPay(pays[en.id])}</div></div>
+                </button>`;
+            }).join('') : '<div class="empty">No shifts in this period yet</div>';
+
+            drawChart(all, animateList);
+            animateList = false; slideDir = 0; flashId = null;
+        };
+    }
+
+    // Hours per pay period for the year on screen, up to the current period
+    function drawChart(all, animate) {
+        const now = periodOf(new Date());
+        const last = view.y === now.y ? now.m : 12;
+        const hours = Array(13).fill(0);
+        all.forEach(en => { const p = periodOf(parseISO(en.date)); if (p.y === view.y) hours[p.m] += en.duration; });
+
+        const maxH = Math.max(...hours.slice(1, last + 1), 1);
+        const x = i => last === 1 ? 150 : (i - 1) * 300 / (last - 1);
+        const y = h => 70 - (h / maxH) * 62;
+        let points = [], dots = '', labels = '';
+        for (let i = 1; i <= last; i++) {
+            const sel = i === view.m;
+            points.push(`${x(i)},${y(hours[i])}`);
+            dots += `<circle class="chart-dot${animate ? ' pop' : ''}" style="--i:${i}" cx="${x(i)}" cy="${y(hours[i])}" r="${sel ? 5 : 3}" fill="${sel ? 'var(--p)' : 'var(--card-bg)'}" stroke="var(--p)" stroke-width="2"/>`;
+            labels += `<text x="${x(i)}" y="90" text-anchor="middle" class="chart-label${sel ? ' sel' : ''}">${MONTHS[i - 1].slice(0, 3)}</text>`;
+        }
+
+        $('chartTitle').innerText = `Hours per ${payStartDay() > 1 ? 'pay period' : 'month'} · ${view.y}`;
+        $('graphContainer').innerHTML = `
+            <svg viewBox="-12 0 324 96" role="img" aria-label="Hours per month">
+                <path class="chart-line${animate ? ' draw' : ''}" pathLength="1" d="M${points.join(' L')}" fill="none" stroke="var(--p)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
+                ${dots}${labels}
+            </svg>`;
+    }
+
+    // --- Exports ---
+    function exportPeriod(kind) {
+        const { start, end } = periodRange(view);
+        (kind === 'pdf' ? generatePDF : exportCSV)(start, end);
+    }
+
+    function exportCustom(kind) {
+        const start = $('reportStart').value, end = $('reportEnd').value;
+        if (!start || !end || start > end) { alert("Choose a valid date range."); return; }
+        (kind === 'pdf' ? generatePDF : exportCSV)(start, end);
+    }
+
+    function generatePDF(start, end) {
+        const { jsPDF } = window.jspdf; const doc = new jsPDF();
+        db.transaction("shifts").objectStore("shifts").getAll().onsuccess = (e) => {
+            const f = e.target.result.filter(en => en.date >= start && en.date <= end).sort((x,y) => (x.date + x.start).localeCompare(y.date + y.start));
             doc.setFontSize(22); doc.setTextColor(103, 80, 164); doc.text(`Work Hours Report`, 14, 22);
             doc.setFontSize(11); doc.setTextColor(100); doc.text(`Period: ${formatDate(start)} to ${formatDate(end)}`, 14, 30);
             const tD = f.map(en => [formatDate(en.date), `${en.start} - ${en.end}`, formatTime(en.duration)]);
             doc.autoTable({ head: [['Date', 'Time Slot', 'Total Duration']], body: tD, startY: 38, headStyles: { fillColor: [103, 80, 164] } });
-            doc.text(`Total Monthly Hours: ${formatTime(f.reduce((s, en) => s + en.duration, 0))}`, 14, doc.lastAutoTable.finalY + 15);
+            doc.text(`Total Hours: ${formatTime(f.reduce((s, en) => s + en.duration, 0))}`, 14, doc.lastAutoTable.finalY + 15);
             doc.save(`Work_Report_${start}_${end}.pdf`);
         };
     }
 
-    function exportBackup() { db.transaction("shifts").objectStore("shifts").getAll().onsuccess = (e) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(e.target.result)], {type: "application/json"})); a.download = `work_backup.json`; a.click(); }; }
-    function importBackup(ev) { const reader = new FileReader(); reader.onload = e => { const tx = db.transaction(["shifts"], "readwrite"); JSON.parse(e.target.result).forEach(i => { delete i.id; tx.objectStore("shifts").add(i); }); tx.oncomplete = () => { alert("Imported!"); renderEntries(); }; }; reader.readAsText(ev.target.files[0]); }
+    // --- Startup ---
+    for (let d = 1; d <= 28; d++) $('payStartDay').add(new Option(d, d));
+    $('payStartDay').value = payStartDay();
+    $('themeSelector').value = localStorage.getItem('theme') || 'system';
+    applyTheme();
+    applyAccent(localStorage.getItem('accentColor') || '#6750A4');
+    if (localStorage.getItem('rate') !== null) $('rate').value = localStorage.getItem('rate');
+    view = periodOf(new Date());
+    resetForm();
+    setCustomRangeToView();
+
+    const request = indexedDB.open("M3WorkTrackerDB_v6", 1);
+    request.onupgradeneeded = e => { db = e.target.result; db.createObjectStore("shifts", { keyPath: "id", autoIncrement: true }); };
+    request.onsuccess = e => { db = e.target.result; renderEntries(); retryPendingBackup(); };
+
+    // --- Backup format (shared by file export/import and Google Drive) ---
+    function getAllShifts() {
+        return new Promise(resolve => { db.transaction("shifts").objectStore("shifts").getAll().onsuccess = e => resolve(e.target.result); });
+    }
+
+    async function buildBackup() {
+        const shifts = (await getAllShifts()).map(({ date, start, end }) => ({ date, start, end }));
+        const settings = { rate: document.getElementById('rate').value, payStartDay: payStartDay(), theme: localStorage.getItem('theme') || 'system', accentColor: localStorage.getItem('accentColor') };
+        return { app: 'work-tracker', version: 1, savedAt: new Date().toISOString(), settings, shifts };
+    }
+
+    // Accepts the current {settings, shifts} format and old plain-array backups
+    function readBackup(data) {
+        if (Array.isArray(data)) return { shifts: data, settings: null };
+        if (data && Array.isArray(data.shifts)) return { shifts: data.shifts, settings: data.settings || null };
+        return null;
+    }
+
+    // Only well-formed shifts are added (they end up in innerHTML), and shifts already saved are skipped
+    async function mergeShifts(items) {
+        const isDate = v => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v);
+        const isTime = v => typeof v === 'string' && /^\d{2}:\d{2}$/.test(v);
+        const valid = items.filter(i => i && isDate(i.date) && isTime(i.start) && isTime(i.end));
+        const seen = new Set((await getAllShifts()).map(i => `${i.date}|${i.start}|${i.end}`));
+        return new Promise(resolve => {
+            const tx = db.transaction(["shifts"], "readwrite");
+            let added = 0;
+            valid.forEach(i => {
+                const key = `${i.date}|${i.start}|${i.end}`;
+                if (seen.has(key)) return;
+                seen.add(key);
+                tx.objectStore("shifts").add({ date: i.date, start: i.start, end: i.end, duration: calcDuration(i.start, i.end) });
+                added++;
+            });
+            tx.oncomplete = () => resolve({ added, skipped: items.length - added });
+        });
+    }
+
+    function applySettings(s) {
+        if (!s) return;
+        if (s.rate !== undefined && !isNaN(parseFloat(s.rate))) {
+            localStorage.setItem('rate', s.rate);
+            document.getElementById('rate').value = s.rate;
+        }
+        const day = parseInt(s.payStartDay, 10);
+        if (day >= 1 && day <= 28) {
+            document.getElementById('payStartDay').value = day;
+            setPayStartDay(day);
+        }
+        if (['system', 'light', 'dark'].includes(s.theme)) {
+            document.getElementById('themeSelector').value = s.theme;
+            changeTheme(s.theme);
+        }
+        if (typeof s.accentColor === 'string' && /^#[0-9a-f]{6}$/i.test(s.accentColor)) {
+            localStorage.setItem('accentColor', s.accentColor);
+            applyAccent(s.accentColor);
+        }
+    }
+
+    async function exportBackup() {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([JSON.stringify(await buildBackup())], {type: "application/json"}));
+        a.download = `work_backup.json`;
+        a.click();
+    }
+
+    function importBackup(ev) {
+        const file = ev.target.files[0];
+        ev.target.value = ''; // allow picking the same file again
+        if (!file) return;
+        prepareCloud();
+        const reader = new FileReader();
+        reader.onload = async e => {
+            let backup;
+            try { backup = readBackup(JSON.parse(e.target.result)); } catch { backup = null; }
+            if (!backup) { alert("This file is not a valid backup."); return; }
+            const { added, skipped } = await mergeShifts(backup.shifts);
+            applySettings(backup.settings);
+            renderEntries();
+            if (added) cloudBackup();
+            alert(`Imported ${added} shift(s)` + (skipped ? `, skipped ${skipped} duplicate or invalid.` : '.'));
+        };
+        reader.readAsText(file);
+    }
+
+    // --- Google Drive Cloud Backup ---
+    // OAuth Client ID of this app (not of a user). It's public by design; setup steps are in the README.
+    // Each user signs in with their own Google account and gets their own backup.
+    const GOOGLE_CLIENT_ID = '757509659073-lgb7odrq4rufgsedfqf0326grsnj0v3t.apps.googleusercontent.com';
+    const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
+    const BACKUP_NAME = 'work_backup.json';
+    let tokenClient = null;
+    let tokenWaiters = [];
+    let backupChain = Promise.resolve();
+
+    const isCloudConnected = () => localStorage.getItem('cloudConnected') === 'true';
+
+    function validToken() {
+        try {
+            const t = JSON.parse(localStorage.getItem('cloudToken'));
+            return t && Date.now() < t.expiry - 60000 ? t.token : null;
+        } catch { return null; }
+    }
+
+    function initCloud() {
+        if (!GOOGLE_CLIENT_ID) return;
+        const settle = fn => { const w = tokenWaiters; tokenWaiters = []; w.forEach(fn); };
+        tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: GOOGLE_CLIENT_ID,
+            scope: DRIVE_SCOPE,
+            callback: resp => {
+                if (resp.error) { settle(w => w.reject(new Error(resp.error))); return; }
+                localStorage.setItem('cloudToken', JSON.stringify({ token: resp.access_token, expiry: Date.now() + resp.expires_in * 1000 }));
+                settle(w => w.resolve(resp.access_token));
+            },
+            error_callback: err => settle(w => w.reject(new Error(err.type === 'popup_closed' ? 'sign-in was cancelled' : 'sign-in failed')))
+        });
+        retryPendingBackup();
+    }
+
+    // Google access tokens last ~1 hour. Getting a new one opens a popup, which browsers only
+    // allow during a tap, so click handlers call prepareCloud() before doing any async work.
+    function getToken() {
+        const t = validToken();
+        if (t) return Promise.resolve(t);
+        if (!tokenClient) return Promise.reject(new Error('Google sign-in is not available (are you offline?)'));
+        return new Promise((resolve, reject) => {
+            tokenWaiters.push({ resolve, reject });
+            if (tokenWaiters.length === 1) tokenClient.requestAccessToken({ prompt: '' });
+        });
+    }
+
+    function prepareCloud() { if (isCloudConnected() && !validToken()) getToken().catch(() => {}); }
+
+    async function driveFetch(url, opts = {}) {
+        const token = await getToken();
+        const res = await fetch(url, { ...opts, headers: { ...opts.headers, Authorization: `Bearer ${token}` } });
+        if (res.status === 401) localStorage.removeItem('cloudToken');
+        if (!res.ok) throw new Error(`Google Drive error ${res.status}`);
+        return res;
+    }
+
+    async function findBackupFile() {
+        const q = encodeURIComponent(`name='${BACKUP_NAME}'`);
+        const res = await driveFetch(`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${q}&fields=files(id,modifiedTime)`);
+        return (await res.json()).files[0] || null;
+    }
+
+    async function downloadBackup() {
+        const file = await findBackupFile();
+        if (!file) return null;
+        const res = await driveFetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`);
+        const backup = readBackup(await res.json());
+        if (!backup) throw new Error('the cloud backup is unreadable');
+        return { ...backup, modified: file.modifiedTime };
+    }
+
+    async function uploadBackup() {
+        const body = JSON.stringify(await buildBackup());
+        const file = await findBackupFile();
+        if (file) {
+            await driveFetch(`https://www.googleapis.com/upload/drive/v3/files/${file.id}?uploadType=media`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body });
+        } else {
+            const form = new FormData();
+            form.append('metadata', new Blob([JSON.stringify({ name: BACKUP_NAME, parents: ['appDataFolder'] })], { type: 'application/json' }));
+            form.append('file', new Blob([body], { type: 'application/json' }));
+            await driveFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', { method: 'POST', body: form });
+        }
+    }
+
+    // Uploads run one at a time so quick edits can't race each other into two backup files.
+    // 'cloudDirty' remembers a failed upload so it is retried later.
+    function cloudBackup(manual) {
+        if (!isCloudConnected()) return;
+        if (manual) prepareCloud();
+        localStorage.setItem('cloudDirty', 'true');
+        updateCloudUI('Backing up…');
+        backupChain = backupChain.then(uploadBackup).then(() => {
+            localStorage.setItem('cloudDirty', 'false');
+            localStorage.setItem('cloudLastBackup', new Date().toISOString());
+            updateCloudUI();
+        }).catch(err => {
+            updateCloudUI();
+            if (manual) alert(`Backup failed: ${err.message}`);
+        });
+    }
+
+    function retryPendingBackup() {
+        if (db && tokenClient && isCloudConnected() && localStorage.getItem('cloudDirty') === 'true' && validToken()) cloudBackup();
+    }
+
+    async function connectCloud() {
+        try {
+            await getToken();
+            localStorage.setItem('cloudConnected', 'true');
+            updateCloudUI('Checking for an existing backup…');
+            // Merge first, so connecting a new (empty) device never overwrites the backup in Drive
+            const remote = await downloadBackup();
+            let added = 0;
+            if (remote) {
+                if ((await getAllShifts()).length === 0) applySettings(remote.settings);
+                added = (await mergeShifts(remote.shifts)).added;
+                renderEntries();
+            }
+            cloudBackup(true);
+            if (added) alert(`Connected. Added ${added} shift(s) from your cloud backup.`);
+        } catch (err) {
+            updateCloudUI();
+            alert(`Couldn't connect to Google Drive: ${err.message}`);
+        }
+    }
+
+    // Adds shifts from the cloud that are missing on this device; never deletes local shifts
+    async function cloudRestore() {
+        try {
+            updateCloudUI('Restoring…');
+            const remote = await downloadBackup();
+            updateCloudUI();
+            if (!remote) { alert("No cloud backup found yet."); return; }
+            const { added } = await mergeShifts(remote.shifts);
+            applySettings(remote.settings);
+            renderEntries();
+            alert(`Restored backup from ${new Date(remote.modified).toLocaleString('en-GB')}: added ${added} shift(s) missing on this device.`);
+        } catch (err) {
+            updateCloudUI();
+            alert(`Restore failed: ${err.message}`);
+        }
+    }
+
+    function disconnectCloud() {
+        if (!confirm("Disconnect Google Drive? Your backup stays in Drive and you can reconnect any time.")) return;
+        const t = validToken();
+        if (t && window.google) google.accounts.oauth2.revoke(t);
+        ['cloudConnected', 'cloudToken', 'cloudDirty', 'cloudLastBackup'].forEach(k => localStorage.removeItem(k));
+        updateCloudUI();
+    }
+
+    function updateCloudUI(status) {
+        const connected = isCloudConnected();
+        document.getElementById('cloudConnected').style.display = connected ? 'block' : 'none';
+        document.getElementById('cloudDisconnected').style.display = connected ? 'none' : 'block';
+        document.getElementById('connectCloudBtn').disabled = !GOOGLE_CLIENT_ID;
+        const last = localStorage.getItem('cloudLastBackup');
+        let text = status;
+        if (!text) {
+            if (!GOOGLE_CLIENT_ID) text = 'Not set up yet: add your Google Client ID to index.html.';
+            else if (!connected) text = 'Automatically back up your shifts to your own Google Drive.';
+            else if (localStorage.getItem('cloudDirty') === 'true') text = 'Latest changes are not backed up yet. Tap "Back up now".';
+            else text = last ? `Last backup: ${new Date(last).toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' })}` : 'Connected';
+        }
+        document.getElementById('cloudStatus').innerText = text;
+    }
+
+    updateCloudUI();
+    window.addEventListener('online', retryPendingBackup);
+    const gis = document.createElement('script');
+    gis.src = 'https://accounts.google.com/gsi/client';
+    gis.onload = initCloud;
+    document.head.appendChild(gis);
 
     // Generate and download CSV file
-    function exportCSV() { 
-        db.transaction("shifts").objectStore("shifts").getAll().onsuccess = (e) => { 
-            const data = e.target.result.sort((x, y) => new Date(x.date) - new Date(y.date));
+    function exportCSV(start, end) {
+        db.transaction("shifts").objectStore("shifts").getAll().onsuccess = (e) => {
+            const data = e.target.result.filter(en => en.date >= start && en.date <= end).sort((x, y) => (x.date + x.start).localeCompare(y.date + y.start));
             let csv = "Date,Start,End,Duration (Hours)\n";
             
             data.forEach(row => {
@@ -478,7 +999,7 @@
             
             const a = document.createElement("a"); 
             a.href = URL.createObjectURL(new Blob([csv], {type: "text/csv"})); 
-            a.download = `work_data.csv`; 
+            a.download = `Work_Data_${start}_${end}.csv`;
             a.click(); 
         }; 
     }
